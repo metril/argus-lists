@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   validate:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,6 +20,8 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0   # the range since the last release is walked for an approving merged PR
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
@@ -35,9 +38,14 @@ jobs:
             404) prev="" ;;
             *) echo "::error::fetching the published roots.json failed (HTTP $code)"; exit 1 ;;
           esac
-          python scripts/validate_roots.py $prev --require-approval
+          # the release tag points at the commit that was published (see "Publish release assets")
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null || true)
+          commit=""
+          if [ -n "$tag" ]; then commit=$(git rev-parse -q --verify "refs/tags/$tag^{commit}" || true); fi
+          python scripts/validate_roots.py $prev --require-approval ${commit:+--prev-commit "$commit"}
 
   release:
+    if: github.ref == 'refs/heads/main'
     needs: validate
     runs-on: ubuntu-latest
     steps:
@@ -85,6 +93,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ steps.ver.outputs.version }}" dist/* \
-            --repo "$GITHUB_REPOSITORY" --latest \
+            --repo "$GITHUB_REPOSITORY" --latest --target "$GITHUB_SHA" \
             --title "${{ steps.ver.outputs.version }}" \
             --notes "Curated bypass lists for Argus. Each file has a .minisig signature."

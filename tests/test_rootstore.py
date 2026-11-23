@@ -9,6 +9,7 @@ from cryptography.x509.oid import NameOID
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "generator"))
 import rootstore as rs  # noqa: E402
 
+CUR = "200.0.0.0"
 NOW = dt.datetime(2026, 11, 23, 12, 0, tzinfo=dt.timezone.utc)
 _cache = {}
 
@@ -75,13 +76,13 @@ def chrome_txt(entries):
 
 
 def test_parse_chrome():
-    c = rs.parse_chrome(chrome_txt([("a" * 64, 1820966399, None), ("b" * 64, None, None), ("c" * 64, 1790812799, "example.com")]))
+    c = rs.parse_chrome(chrome_txt([("a" * 64, 1820966399, None), ("b" * 64, None, None), ("c" * 64, 1790812799, "example.com")]), CUR)
     assert set(c) == {"a" * 64, "b" * 64, "c" * 64}  # additional_certs ignored
     assert c["a" * 64] == {"sct_not_after": "2027-09-14T23:59:59Z", "permitted_dns_names": []}
     assert c["b" * 64] == {"sct_not_after": None, "permitted_dns_names": []}
     assert c["c" * 64]["permitted_dns_names"] == ["example.com"]
     with pytest.raises(rs.RootError):
-        rs.parse_chrome("trust_anchors {\n sha256_hex: \"" + "a" * 64 + "\"\n constraints: {\n sct_all_after_sec: 5\n }\n}\n")
+        rs.parse_chrome("trust_anchors {\n sha256_hex: \"" + "a" * 64 + "\"\n constraints: {\n sct_all_after_sec: 5\n }\n}\n", CUR)
 
 
 def test_parse_ccadb_filters_websites_and_distrust():
@@ -161,7 +162,7 @@ def loglist(states=("usable", "usable", "usable", "retired"), tiled=("usable",))
 def gen_kwargs(chrome_hashes, **kw):
     data, sig = loglist()
     return dict(chrome_text=chrome_txt([(h, None, None) for h in chrome_hashes]), loglist=data, loglist_sig=sig,
-                pubkey_pem=SIGPEM, **kw)
+                pubkey_pem=SIGPEM, chrome_version=CUR, rejected=set(), **kw)
 
 
 def test_log_list_signature_and_filters():
@@ -277,8 +278,8 @@ def r(h, dist=None, sct=None, dns=()):
             "permitted_dns_names": list(dns)}
 
 
-def lg(i, state="usable", since="2026-01-01T00:00:00Z", ti=None):
-    return {"log_id": i, "key": "k", "operator": "o", "type": "rfc6962", "state": state, "state_since": since, "temporal_interval": ti}
+def lg(i, state="usable", since="2026-01-01T00:00:00Z", ti=None, typ="rfc6962"):
+    return {"log_id": i, "key": "k", "operator": "o", "type": typ, "state": state, "state_since": since, "temporal_interval": ti}
 
 
 @pytest.mark.parametrize("old,new,status", [
@@ -316,6 +317,7 @@ def test_classify(old, new, status):
     ([lg("1", "retired")], [lg("1", "usable")], "review"),
     ([lg("1", "retired")], [lg("1", "retired", since="2026-06-01T00:00:00Z")], "review"),
     ([lg("1")], [lg("1", ti={"start": "a", "end": "b"})], "review"),
+    ([lg("1")], [lg("1", typ="static")], "review"),
 ])
 def test_classify_logs(old, new, status):
     assert rs.classify({"roots": [], "ct_logs": old}, {"roots": [], "ct_logs": new})[0] == status
@@ -404,23 +406,23 @@ def anchor(body, sha="a" * 64):
 
 def test_parse_chrome_unknown_fields_fail():
     with pytest.raises(rs.RootError, match="unknown trust anchor field"):
-        rs.parse_chrome(anchor("  new_field: 1\n"))
+        rs.parse_chrome(anchor("  new_field: 1\n"), CUR)
     with pytest.raises(rs.RootError, match="unknown constraint field"):
-        rs.parse_chrome(anchor("  constraints: {\n    mystery: 1\n  }\n"))
+        rs.parse_chrome(anchor("  constraints: {\n    mystery: 1\n  }\n"), CUR)
     with pytest.raises(rs.RootError):
-        rs.parse_chrome(anchor("  constraints: {\n"))  # truncated
+        rs.parse_chrome(anchor("  constraints: {\n"), CUR)  # truncated
 
 
 def test_parse_chrome_one_line_constraints_and_version_blocks():
-    c = rs.parse_chrome(anchor('  constraints { sct_not_after_sec: 1820966399 min_version: "1.0" permitted_dns_names: "a.com" }\n'))
+    c = rs.parse_chrome(anchor('  constraints { sct_not_after_sec: 1820966399 min_version: "1.0" permitted_dns_names: "a.com" }\n'), CUR)
     assert c["a" * 64] == {"sct_not_after": "2027-09-14T23:59:59Z", "permitted_dns_names": ["a.com"]}
     paired = anchor('  constraints: { sct_not_after_sec: 1820966399 min_version: "9" }\n  constraints: { max_version_exclusive: "9" }\n')
-    assert rs.parse_chrome(paired)["a" * 64]["sct_not_after"] == "2027-09-14T23:59:59Z"  # still trusted by current Chrome
+    assert rs.parse_chrome(paired, CUR)["a" * 64]["sct_not_after"] == "2027-09-14T23:59:59Z"  # still trusted by current Chrome
 
 
 def test_parse_chrome_max_version_only_means_removed():
     txt = anchor('  constraints: { max_version_exclusive: "9" }\n') + anchor("", "b" * 64)
-    assert set(rs.parse_chrome(txt)) == {"b" * 64}
+    assert set(rs.parse_chrome(txt, CUR)) == {"b" * 64}
 
 
 def test_parse_certdata_truncation():
@@ -468,3 +470,92 @@ def test_workflows_pinned_and_guarded():
     assert "workflow_dispatch" in (wf / "test.yml").read_text()
     rel = (wf / "release.yml").read_text()
     assert "--require-approval" in rel and '404)' in rel
+
+
+# ---- Chrome versions, rejected roots, release approval range, workflow races ----
+
+def gated(min_v=None, max_v=None, sct=1820966399):
+    body = "  constraints: {\n" + (f"    sct_not_after_sec: {sct}\n" if sct else "")
+    body += (f'    min_version: "{min_v}"\n' if min_v else "") + (f'    max_version_exclusive: "{max_v}"\n' if max_v else "") + "  }\n"
+    return body
+
+
+@pytest.mark.parametrize("cur,present,sct", [
+    ("158.0.8127.36", True, "2027-09-14T23:59:59Z"),   # min_version reached: constraint applies
+    ("153.0.8010.0", True, "2027-09-14T23:59:59Z"),    # boundary: current >= min
+    ("153.0.8009.9", True, None),                      # older Chrome uses the unconstrained block
+])
+def test_parse_chrome_version_pairs(cur, present, sct):
+    txt = anchor(gated("153.0.8010.0") + gated(max_v="153.0.8010.0", sct=None))
+    c = rs.parse_chrome(txt, cur)
+    assert ("a" * 64 in c) is present and c["a" * 64]["sct_not_after"] == sct
+
+
+def test_parse_chrome_version_gated_out_means_absent():
+    assert "a" * 64 not in rs.parse_chrome(anchor(gated("300.0.0.0")) + anchor("", "b" * 64), "200.0.0.0")  # not trusted yet
+    assert "a" * 64 not in rs.parse_chrome(anchor(gated(max_v="199.0.0.0", sct=None)) + anchor("", "b" * 64), "200.0.0.0")  # removed
+    assert "a" * 64 in rs.parse_chrome(anchor(gated("100.0.0.0", "300.0.0.0")), "200.0.0.0")  # inside [min, max)
+    assert "a" * 64 not in rs.parse_chrome(anchor(gated("100.0.0.0", "200.0.0.0")) + anchor("", "b" * 64), "200.0.0.0")  # max exclusive
+
+
+def test_chrome_version_fetch_parsing():
+    assert rs.parse_chrome_version(b'{"versions":[{"version":"158.0.8127.36"}]}') == "158.0.8127.36"
+    for bad in (b"", b"{}", b'{"versions":[]}', b'{"versions":[{"version":"x"}]}', b'{"versions":[{"version":"12.0.0.1"}]}'):
+        with pytest.raises(rs.RootError):
+            rs.parse_chrome_version(bad)
+
+
+def test_rejected_file(tmp_path):
+    f = tmp_path / "rejected.txt"
+    f.write_text("# header\n" + "AB" * 32 + "  # reason\n\n")
+    assert rs.load_rejected(f) == {"ab" * 32}
+    assert rs.load_rejected(tmp_path / "missing.txt") == set()
+    f.write_text("nothex\n")
+    with pytest.raises(rs.RootError):
+        rs.load_rejected(f)
+    assert rs.load_rejected() == set() or all(len(h) == 64 for h in rs.load_rejected())  # committed file parses
+
+
+def test_generate_excludes_rejected_and_validate_rejects(tmp_path):
+    ds, cc, nss = corpus(rs.MIN_ROOTS + 3)
+    kw = gen_kwargs([sha(d) for d in ds])
+    kw["rejected"] = {sha(ds[0])}
+    out = tmp_path / "r.json"
+    rs.generate(out, now=NOW, ccadb_text=cc, certdata_text=nss, **kw)
+    doc = json.loads(out.read_text())
+    assert sha(ds[0]) not in {x["sha256"] for x in doc["roots"]} and len(doc["roots"]) == rs.MIN_ROOTS + 2
+    rs.validate(doc, rejected={sha(ds[0])})
+    with pytest.raises(rs.RootError, match="rejected"):
+        rs.validate(doc, rejected={doc["roots"][0]["sha256"]})
+    assert "roots/rejected.txt" in rs.pr_body([])
+
+
+def test_approved_range():
+    prev = D([r("a")])
+    head = D([r("a"), r("b")], serial=12)
+    assert not rs.approved(prev, head, [])                                   # loosening, no approving commit
+    assert not rs.approved(prev, head, [(False, D([r("a"), r("b")]))])       # commit not from a merged PR
+    assert rs.approved(prev, head, [(True, D([r("a"), r("b")], serial=11))])  # merged PR approved b
+    # an unapproved earlier failure does not block a later stricter release: head equals what was approved
+    head2 = D([r("a"), r("b", dist="2026-01-01T00:00:00Z")], serial=13)
+    assert rs.approved(prev, head2, iter([(True, D([r("a"), r("b")], serial=11))]))
+    # head adds something the approved commit did not have
+    assert not rs.approved(prev, D([r("a"), r("b"), r("c")]), [(True, D([r("a"), r("b")]))])
+    assert rs.approved(prev, D([r("a")], serial=11), [])                     # no loosening: no candidates needed
+
+
+def test_approved_is_lazy_when_not_needed():
+    def boom():
+        raise AssertionError("must not be consumed")
+        yield
+    assert rs.approved(D([r("a")]), D([], serial=11), boom())
+
+
+def test_workflows_race_and_release_guards():
+    wf = pathlib.Path(__file__).resolve().parent.parent / ".github" / "workflows"
+    roots = (wf / "roots.yml").read_text()
+    assert "needs.generate.outputs.sha" in roots and "git push origin HEAD:main; then" in roots
+    assert "ref: main" not in roots.split("publish:")[1]
+    rel = (wf / "release.yml").read_text()
+    assert rel.count("if: github.ref == 'refs/heads/main'") == 2  # validate and release
+    assert '--target "$GITHUB_SHA"' in rel and "--prev-commit" in rel

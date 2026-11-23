@@ -55,7 +55,8 @@ Store) that Argus uses for certificate verification and chain display, with Chro
 when fetched). `generator/rootstore.py` builds it from the CCADB "Mozilla included CA certificates" CSV,
 cross-checked against NSS `certdata.txt`; the job fails if they differ by more than 3 roots. Roots absent
 from the Chrome Root Store are dropped; Chrome-only roots are never added. Unknown Chrome fields fail the
-job rather than being ignored.
+job rather than being ignored, and `min_version`/`max_version_exclusive` blocks are evaluated against Chrome's
+current stable version (VersionHistory API; the job fails if it cannot be read).
 
 `.github/workflows/roots.yml` runs daily in two jobs: a read-only `generate` job (regenerate, validate,
 split) and a `publish` job that only commits files, opens the PR and dispatches workflows.
@@ -67,9 +68,14 @@ split) and a `publish` job that only commits files, opens the PR and dispatches 
   that into the rolling `roots/auto` PR (never auto-merged). The branch is rebuilt on the current `main`
   every run, left alone when only `serial`/`generated_at` would change, and the PR is closed (branch
   deleted) when nothing is left to review, so a stale PR cannot reintroduce a removed root.
-* `release.yml` validates (`scripts/validate_roots.py`), refuses a serial that is not greater than the
+* A root listed in `roots/rejected.txt` (sha256 per line, `#` reason) is never published, so a rejected
+  root does not reopen the PR every day; reject one with a normal reviewed PR to `main`.
+* `publish` checks out exactly the `main` commit that `generate` saw; if `main` moved meanwhile the push is
+  non-fast-forward and the run is skipped (the next run redoes it).
+* `release.yml` runs only on `main`, validates (`scripts/validate_roots.py`), refuses a serial that is not greater than the
   published one, fails on any error fetching the published file other than 404, and refuses a loosening
-  whose head commit is not part of a merged PR into `main`. It publishes `roots.json` and
+  unless some commit since the last published release (the release tag points at the published commit)
+  came from a merged PR into `main` and the head does not loosen that commit's `roots.json`. It publishes `roots.json` and
   `roots.json.minisig` next to the lists.
 
 Repository settings the workflows rely on: Actions may create pull requests; on `main` require pull

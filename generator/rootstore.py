@@ -34,6 +34,10 @@ K0RlqbFDl2JXMBquwlQpm8u5wrsic1ksIv9z8x9zh4PJqNpCah0ciemI3YGRQqSe
 +z1lVDhhYuSZ8ax3T0C3FZpb7HMjZtpEorSV5ElKJEJwrhrBCMOD8L01EoSPrGlS
 1w22i9uGHMn/uGQKo28u7AsCAwEAAQ==
 -----END PUBLIC KEY-----"""
+CHROME_VERSION_URL = ("https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/"
+                      "versions?pageSize=1&orderBy=version%20desc")
+CURRENT_CHROME_MAJOR = 158  # pinned floor: a fetched stable major below this is treated as a bad answer
+REJECTED = ROOT / "roots" / "rejected.txt"
 MIN_USABLE_LOGS = 3
 LOG_STATES = ("usable", "qualified", "readonly", "retired")
 OUT = ROOT / "roots" / "roots.json"
@@ -138,6 +142,20 @@ def parse_certdata(text):
 
 # ---- build ---------------------------------------------------------------------------------
 
+def load_rejected(path=REJECTED):
+    """Set of sha256 values listed in roots/rejected.txt (one per line, '#' comments allowed)."""
+    out = set()
+    if path.exists():
+        for n, line in enumerate(path.read_text().splitlines(), 1):
+            h = line.split("#", 1)[0].strip().lower()
+            if not h:
+                continue
+            if not re.fullmatch(r"[0-9a-f]{64}", h):
+                raise RootError(f"{path.name}:{n}: not a sha256: {h!r}")
+            out.add(h)
+    return out
+
+
 def subject_of(der):
     from cryptography import x509
     return x509.load_der_x509_certificate(der).subject.rfc4514_string()
@@ -207,14 +225,46 @@ def _textproto(text):
     return message(False)
 
 
-def parse_chrome(text):
+def current_str(t):
+    return ".".join(map(str, t))
+
+
+def _ver(v):
+    if not re.fullmatch(r"\d+(\.\d+){0,3}", v):
+        raise RootError(f"Chrome Root Store: bad version {v!r}")
+    return tuple(int(x) for x in v.split("."))
+
+
+def parse_chrome_version(data):
+    """Current Chrome stable version from the VersionHistory API response (bytes); fail loudly otherwise."""
+    try:
+        v = json.loads(data)["versions"][0]["version"]
+        t = _ver(v)
+    except (ValueError, KeyError, IndexError, TypeError, RootError):
+        raise RootError("could not read the current Chrome stable version")
+    if len(t) != 4 or t[0] < CURRENT_CHROME_MAJOR:
+        raise RootError(f"implausible Chrome stable version {v!r} (pinned floor major {CURRENT_CHROME_MAJOR})")
+    return v
+
+
+def fetch_chrome_version():
+    try:
+        return parse_chrome_version(http_get(CHROME_VERSION_URL))
+    except RootError:
+        raise
+    except Exception as e:
+        raise RootError(f"could not fetch the current Chrome stable version: {e!r}")
+
+
+def parse_chrome(text, current):
     """{sha256: {"sct_not_after": RFC3339|None, "permitted_dns_names": [..]}} from root_store.textproto.
 
     Only trust_anchors are read; any field not on the whitelist raises RootError (an unknown constraint
-    must never be silently dropped). A constraint block with max_version_exclusive does not apply to
-    current Chrome; an anchor whose constraints are all of that kind is removed in current Chrome and is
-    left out. sct_all_after cannot be represented in schema 1: fail loudly. The strictest value wins when
-    several current constraints are present."""
+    must never be silently dropped). A constraint block applies to Chrome version `current` only if
+    current >= min_version and current < max_version_exclusive; an anchor with constraint blocks of
+    which none applies (removed, or not trusted yet) is left out. sct_all_after cannot be represented in
+    schema 1: fail loudly. The strictest value wins when several applicable blocks are present."""
+    cur = _ver(current)
     out = {}
     anchors = [v for k, v in _textproto(text) if k == "trust_anchors"]
     for a in anchors:
@@ -236,12 +286,17 @@ def parse_chrome(text):
                     if ck not in CONSTRAINT_KEYS:
                         raise RootError(f"Chrome Root Store: unknown constraint field {ck!r} on {sha}")
                 blocks.append(v)
-        current = [b for b in blocks if not any(k == "max_version_exclusive" for k, _ in b)]
-        if blocks and not current:
-            print(f"Chrome removed {sha} (only max_version_exclusive constraints)", file=sys.stderr)
+        def applies(b):
+            mn = [_ver(v) for k, v in b if k == "min_version"]
+            mx = [_ver(v) for k, v in b if k == "max_version_exclusive"]
+            return all(cur >= m for m in mn) and all(cur < m for m in mx)
+
+        live = [b for b in blocks if applies(b)]
+        if blocks and not live:
+            print(f"Chrome store: {sha} is version-gated out for Chrome {current_str(cur)}; treated as absent", file=sys.stderr)
             continue
         sct, dns = [], set()
-        for b in current:
+        for b in live:
             for k, v in b:
                 if k == "sct_all_after_sec":
                     raise RootError(f"Chrome sct_all_after constraint on {sha} is not representable; extend the schema")
@@ -328,7 +383,8 @@ def render(doc):
 
 
 def generate(out=OUT, max_diff=DEFAULT_MAX_DIFF, now=None, ccadb_text=None, certdata_text=None,
-             chrome_text=None, loglist=None, loglist_sig=None, pubkey_pem=CT_LOG_LIST_PUBKEY):
+             chrome_text=None, loglist=None, loglist_sig=None, pubkey_pem=CT_LOG_LIST_PUBKEY,
+             chrome_version=None, rejected=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     if ccadb_text is None:
         ccadb_text = http_get(CCADB_URL).decode("utf-8")
@@ -343,7 +399,14 @@ def generate(out=OUT, max_diff=DEFAULT_MAX_DIFF, now=None, ccadb_text=None, cert
     ccadb, nss = parse_ccadb(ccadb_text), parse_certdata(certdata_text)
     if len(set(ccadb) & nss) < MIN_ROOTS:
         raise RootError(f"only {len(set(ccadb) & nss)} Mozilla roots (floor {MIN_ROOTS})")
-    roots, dropped = build(ccadb, nss, parse_chrome(chrome_text), max_diff)
+    if chrome_version is None:
+        chrome_version = fetch_chrome_version()
+    roots, dropped = build(ccadb, nss, parse_chrome(chrome_text, chrome_version), max_diff)
+    rejected = load_rejected() if rejected is None else rejected
+    for r in roots:
+        if r["sha256"] in rejected:
+            print(f"rejected by roots/rejected.txt: {r['sha256']} {r['subject']}", file=sys.stderr)
+    roots = [r for r in roots if r["sha256"] not in rejected]
     print(f"{len(dropped)} Mozilla roots dropped for being absent from the Chrome Root Store")
     if len(roots) < MIN_FINAL_ROOTS:
         raise RootError(f"only {len(roots)} roots (floor {MIN_FINAL_ROOTS})")
@@ -383,7 +446,8 @@ def _root_loosened(a, b):
 
 
 def _log_loosened(a, b):
-    if a["key"] != b["key"] or a["temporal_interval"] != b["temporal_interval"] or a["operator"] != b["operator"]:
+    if (a["key"] != b["key"] or a["temporal_interval"] != b["temporal_interval"] or a["operator"] != b["operator"]
+            or a.get("type") != b.get("type")):
         return True
     if STATE_RANK[b["state"]] < STATE_RANK[a["state"]]:
         return True
@@ -460,6 +524,15 @@ def rebase_serial(base, new, now=None):
     return {**new, "serial": next_serial(base["serial"], now)} if new["serial"] <= base["serial"] else new
 
 
+def approved(prev, head, candidates):
+    """True if head does not loosen prev, or some candidate (merged_pr: bool, doc_at_commit) from the
+    commits since the last release belongs to a merged PR and head does not loosen that doc.
+    `candidates` may be a lazy iterable (each item may cost an API call)."""
+    if classify(prev, head)[0] != "review":
+        return True
+    return any(merged and doc is not None and classify(doc, head)[0] != "review" for merged, doc in candidates)
+
+
 def merged_pr_ok(pulls):
     """True if the commit-associated PR list (GitHub API) holds a merged PR into main."""
     return any(p.get("merged_at") and p.get("base", {}).get("ref") == "main" for p in pulls)
@@ -472,7 +545,12 @@ def _clean(s):
 def pr_body(added):
     lines = ["Root store changes that loosen trust, awaiting review (never auto-merged). Listed below: added roots; "
              "see the diff for CT log and constraint changes.", "",
-             f"Source report: {CCADB_URL}", "", "| Subject | SHA-256 | Links |", "|---|---|---|"]
+             f"Source report: {CCADB_URL}", "",
+             "To reject a root: open a normal PR to main adding its sha256 to `roots/rejected.txt` with a `#` comment "
+             "giving the reason. The next daily run then leaves it out and this PR updates or closes itself. "
+             "Do not edit this branch; it is rebuilt on main every run. Removing a line from `rejected.txt` "
+             "is a reviewed change too.", "",
+             "| Subject | SHA-256 | Links |", "|---|---|---|"]
     for r in added:
         lines.append(f"| `{_clean(r['subject'])}` | `{r['sha256']}` | [CCADB report]({CCADB_URL}) / "
                      f"[crt.sh](https://crt.sh/?q={r['sha256']}) |")
@@ -531,7 +609,7 @@ def validate_logs(logs):
         raise RootError(f"fewer than {MIN_USABLE_LOGS} usable CT logs")
 
 
-def validate(doc, prev_serial=None, min_roots=MIN_FINAL_ROOTS):
+def validate(doc, prev_serial=None, min_roots=MIN_FINAL_ROOTS, rejected=frozenset()):
     """Raise RootError on any problem."""
     from cryptography import x509
     from cryptography.hazmat.primitives.asymmetric import ec, padding, rsa, ed25519, ed448
@@ -554,6 +632,8 @@ def validate(doc, prev_serial=None, min_roots=MIN_FINAL_ROOTS):
     if [r.get("sha256") for r in roots] != sorted({r.get("sha256") for r in roots}):
         raise RootError("roots not sorted by sha256 or duplicated")
     for r in roots:
+        if r.get("sha256") in rejected:
+            raise RootError(f"root {r['sha256']} is listed in roots/rejected.txt")
         if set(r) != {"sha256", "subject", "der", "distrust_after", "sct_not_after", "permitted_dns_names"}:
             raise RootError(f"bad root keys: {r.get('sha256')}")
         der = base64.b64decode(r["der"], validate=True)
@@ -627,11 +707,11 @@ def main():
             base = strict if has_strict else old
             review = not same_content(base, new)
             if has_strict:
-                validate(strict)  # a stricter doc that fails validation fails the job loudly
+                validate(strict, rejected=load_rejected())  # a stricter doc that fails validation fails the job loudly
                 (a.outdir / "stricter.json").write_text(render(strict))
             if review:
                 doc = rebase_serial(base, new)
-                validate(doc)
+                validate(doc, rejected=load_rejected())
                 (a.outdir / "review.json").write_text(render(doc))
                 (a.outdir / "body.md").write_text(pr_body(classify(base, new)[1]))
             fresh = bool(a.branch and a.branch.exists() and review and not has_strict

@@ -17,6 +17,7 @@ jobs:
     permissions:
       contents: read
     outputs:
+      sha: ${{ steps.sha.outputs.sha }}
       stricter: ${{ steps.split.outputs.stricter }}
       review: ${{ steps.split.outputs.review }}
       branch_fresh: ${{ steps.split.outputs.branch_fresh }}
@@ -30,6 +31,9 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -q --require-hashes -r requirements.txt
+      - name: Record the main commit this run is based on
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Regenerate (fails loudly if CCADB and certdata disagree)
         run: |
           cp roots/roots.json "$RUNNER_TEMP/old.json"
@@ -67,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          ref: main
+          ref: ${{ needs.generate.outputs.sha }}   # exactly what generate saw, so a merge in between is never reverted
           fetch-depth: 0
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
@@ -88,7 +92,10 @@ jobs:
             cp out/stricter.json roots/roots.json
             git add roots/roots.json
             git commit -m "Update root store (stricter changes only)"
-            git push origin HEAD:main
+            if ! git push origin HEAD:main; then
+              echo "main moved while the job ran (non-fast-forward); skipping, the next run redoes this"
+              exit 0
+            fi
             gh workflow run release.yml --ref main
           fi
           if [ "$REVIEW" != yes ]; then
