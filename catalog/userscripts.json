@@ -1,0 +1,516 @@
+{
+  "schema": 1,
+  "kind": "userscripts",
+  "entries": [
+    {
+      "id": "gf-584347",
+      "name": "Universal Anti Adblock Popup Remover",
+      "description": "Removes anti-adblock popups and overlays that appear on sites.",
+      "install_url": "https://update.greasyfork.org/scripts/584347/Universal%20Anti%20Adblock%20Popup%20Remover.user.js",
+      "homepage": "https://greasyfork.org/scripts/584347",
+      "sites": [
+        "*"
+      ],
+      "category": "ads",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-534344",
+      "name": "Basic Ad Blocker & Anti-Adblock Defeater (UserScript)",
+      "description": "Hides common ad elements and neutralises basic anti-adblock checks.",
+      "install_url": "https://update.greasyfork.org/scripts/534344/Basic%20Ad%20Blocker%20%20Anti-Adblock%20Defeater%20%28UserScript%29.user.js",
+      "homepage": "https://greasyfork.org/scripts/534344",
+      "sites": [
+        "*"
+      ],
+      "category": "ads",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-550006",
+      "name": "Google Search: Remove Sponsored Results",
+      "description": "Removes sponsored results from Google Search result pages.",
+      "install_url": "https://update.greasyfork.org/scripts/550006/Google%20Search%3A%20Remove%20Sponsored%20Results.user.js",
+      "homepage": "https://greasyfork.org/scripts/550006",
+      "sites": [
+        "www.google.com",
+        "encrypted.google.com"
+      ],
+      "category": "ads",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-431691",
+      "name": "Bypass All Shortlinks",
+      "description": "Skips the wait pages of common link shorteners and goes straight to the destination.",
+      "install_url": "https://update.greasyfork.org/scripts/431691/Bypass%20All%20Shortlinks.user.js",
+      "homepage": "https://greasyfork.org/scripts/431691",
+      "sites": [
+        "*"
+      ],
+      "category": "shortlinks",
+      "licence": null,
+      "needs_gm": "xhr",
+      "connect": [
+        "*"
+      ],
+      "requires": [
+        "https://update.greasyfork.org/scripts/528923/1588272/MonkeyConfig%20Mod.js"
+      ]
+    },
+    {
+      "id": "gf-523522",
+      "name": "Faster Google Search",
+      "description": "Speeds up Google Search by bypassing link rewriting and tracking redirects.",
+      "install_url": "https://update.greasyfork.org/scripts/523522/Faster%20Google%20Search.user.js",
+      "homepage": "https://greasyfork.org/scripts/523522",
+      "sites": [
+        "www.google.com"
+      ],
+      "category": "link-cleaning",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-591392",
+      "name": "Google Search Direct Links (Bypass /goto)",
+      "description": "Replaces Google result links with the direct destination URL, bypassing the /goto redirect.",
+      "install_url": "https://update.greasyfork.org/scripts/591392/Google%20Search%20Direct%20Links%20%28Bypass%20goto%29.user.js",
+      "homepage": "https://greasyfork.org/scripts/591392",
+      "sites": [
+        "*.google.*"
+      ],
+      "category": "link-cleaning",
+      "licence": "MIT",
+      "needs_gm": "xhr",
+      "connect": [
+        "self",
+        "google.*"
+      ],
+      "requires": []
+    },
+    {
+      "id": "gf-542922",
+      "name": "URLCleaner - Link Purifier & Tracker Remover",
+      "description": "Strips tracking parameters and redirect wrappers from links on any page.",
+      "install_url": "https://update.greasyfork.org/scripts/542922/URLCleaner%20-%20Link%20Purifier%20%20Tracker%20Remover.user.js",
+      "homepage": "https://greasyfork.org/scripts/542922",
+      "sites": [
+        "*"
+      ],
+      "category": "link-cleaning",
+      "licence": "MIT",
+      "needs_gm": "basic",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-409925",
+      "name": "TrackingTokenStripper",
+      "description": "Removes known tracking tokens from URLs in the address bar and in links.",
+      "install_url": "https://update.greasyfork.org/scripts/409925/TrackingTokenStripper.user.js",
+      "homepage": "https://greasyfork.org/scripts/409925",
+      "sites": [
+        "*"
+      ],
+      "category": "link-cleaning",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-432387",
+      "name": "General URL Cleaner Revived",
+      "description": "Cleans tracking parameters from URLs on a list of large shopping, social and search sites.",
+      "install_url": "https://update.greasyfork.org/scripts/432387/General%20URL%20Cleaner%20Revived.user.js",
+      "homepage": "https://greasyfork.org/scripts/432387",
+      "sites": [
+        "*.google.*",
+        "*.amazon.*",
+        "www.youtube.com",
+        "www.facebook.com",
+        "www.reddit.com",
+        "www.tiktok.com",
+        "www.linkedin.com",
+        "www.walmart.com"
+      ],
+      "category": "link-cleaning",
+      "licence": "GPL-3.0-or-later",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-404632",
+      "name": "Twitter Direct",
+      "description": "Replaces t.co shortened links on Twitter/X with their real destination.",
+      "install_url": "https://update.greasyfork.org/scripts/404632/Twitter%20Direct.user.js",
+      "homepage": "https://greasyfork.org/scripts/404632",
+      "sites": [
+        "mobile.twitter.com",
+        "twitter.com",
+        "x.com"
+      ],
+      "category": "link-cleaning",
+      "licence": "LicenseRef-GPL-unspecified",
+      "needs_gm": "basic",
+      "connect": [],
+      "requires": [
+        "https://unpkg.com/gm-compat@1.1.0/dist/index.iife.min.js"
+      ],
+      "licence_note": "Upstream header says only \"GPL\""
+    },
+    {
+      "id": "gf-548145",
+      "name": "Facebook Login Wall Remover",
+      "description": "Removes the login wall overlay on Facebook so public content stays readable.",
+      "install_url": "https://update.greasyfork.org/scripts/548145/Facebook%20Login%20Wall%20Remover.user.js",
+      "homepage": "https://greasyfork.org/scripts/548145",
+      "sites": [
+        "*.facebook.com"
+      ],
+      "category": "social",
+      "licence": "MIT",
+      "needs_gm": "xhr",
+      "connect": [
+        "*"
+      ],
+      "requires": [
+        "https://cdn.jsdelivr.net/npm/@zumer/snapdom@2.12.2/dist/snapdom.js#sha256=5fe8acfa7aeeb3c02d7f850836b3b228de5b9ada6165951b24813987e8e692b3"
+      ]
+    },
+    {
+      "id": "gf-578586",
+      "name": "Disable Google AI Overview",
+      "description": "Hides the AI Overview block on Google Search results.",
+      "install_url": "https://update.greasyfork.org/scripts/578586/Disable%20Google%20AI%20Overview.user.js",
+      "homepage": "https://greasyfork.org/scripts/578586",
+      "sites": [
+        "*.google.*"
+      ],
+      "category": "google-ai-overview",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-540134",
+      "name": "Remove Google AI Overview",
+      "description": "Removes the AI Overview section from Google Search results.",
+      "install_url": "https://update.greasyfork.org/scripts/540134/Remove%20Google%20AI%20Overview.user.js",
+      "homepage": "https://greasyfork.org/scripts/540134",
+      "sites": [
+        "www.google.com"
+      ],
+      "category": "google-ai-overview",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-559629",
+      "name": "Disable Google AI Overview",
+      "description": "Disables the AI Overview feature on Google pages.",
+      "install_url": "https://update.greasyfork.org/scripts/559629/Disable%20Google%20AI%20Overview.user.js",
+      "homepage": "https://greasyfork.org/scripts/559629",
+      "sites": [
+        "www.google.com"
+      ],
+      "category": "google-ai-overview",
+      "licence": "GPL-3.0-only",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-436115",
+      "name": "Return YouTube Dislike",
+      "description": "Restores the dislike count on YouTube videos using a community estimate service.",
+      "install_url": "https://update.greasyfork.org/scripts/436115/Return%20YouTube%20Dislike.user.js",
+      "homepage": "https://greasyfork.org/scripts/436115",
+      "sites": [
+        "*.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": null,
+      "needs_gm": "basic",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-453320",
+      "name": "Simple Sponsor Skipper",
+      "description": "Skips sponsored segments in YouTube videos using the SponsorBlock database.",
+      "install_url": "https://update.greasyfork.org/scripts/453320/Simple%20Sponsor%20Skipper.user.js",
+      "homepage": "https://greasyfork.org/scripts/453320",
+      "sites": [
+        "*.youtube.com",
+        "youtu.be",
+        "odysee.com",
+        "yewtu.be"
+      ],
+      "category": "youtube",
+      "licence": "AGPL-3.0-or-later",
+      "needs_gm": "xhr",
+      "connect": [
+        "sponsor.ajay.app",
+        "*"
+      ],
+      "requires": [
+        "https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"
+      ]
+    },
+    {
+      "id": "gf-560869",
+      "name": "SponsorBlock Lite",
+      "description": "Lightweight SponsorBlock client that skips sponsor segments on YouTube and Bilibili.",
+      "install_url": "https://update.greasyfork.org/scripts/560869/SponsorBlock%20Lite.user.js",
+      "homepage": "https://greasyfork.org/scripts/560869",
+      "sites": [
+        "www.youtube.com",
+        "music.youtube.com",
+        "m.youtube.com",
+        "*.bilibili.com"
+      ],
+      "category": "youtube",
+      "licence": "LGPL-3.0-or-later",
+      "needs_gm": "xhr",
+      "connect": [
+        "sponsor.ajay.app",
+        "bsbsb.top"
+      ],
+      "requires": []
+    },
+    {
+      "id": "gf-546668",
+      "name": "YouTube-UI-Customizer",
+      "description": "Adds a settings menu to hide or rearrange parts of the YouTube interface.",
+      "install_url": "https://update.greasyfork.org/scripts/546668/YouTube-UI-Customizer.user.js",
+      "homepage": "https://greasyfork.org/scripts/546668",
+      "sites": [
+        "www.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": "MIT",
+      "needs_gm": "basic",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-540106",
+      "name": "YouTube Enhancer: Skip Ads, Expand Description, Disable Shorts",
+      "description": "Skips video ads, expands descriptions and can disable Shorts on YouTube.",
+      "install_url": "https://update.greasyfork.org/scripts/540106/YouTube%20Enhancer%3A%20Skip%20Ads%2C%20Expand%20Description%2C%20Disable%20Shorts.user.js",
+      "homepage": "https://greasyfork.org/scripts/540106",
+      "sites": [
+        "www.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": null,
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-481929",
+      "name": "YouTube Playlist Autoplay Button",
+      "description": "Adds a button to toggle autoplay for YouTube playlists.",
+      "install_url": "https://update.greasyfork.org/scripts/481929/YouTube%20Playlist%20Autoplay%20Button.user.js",
+      "homepage": "https://greasyfork.org/scripts/481929",
+      "sites": [
+        "www.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": "GPL-3.0-only",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": [
+        "https://cdn.jsdelivr.net/gh/cyfung1031/userscript-supports@8fac46500c5a916e6ed21149f6c25f8d1c56a6a3/library/ytZara.js",
+        "https://cdn.jsdelivr.net/gh/cyfung1031/userscript-supports@c2b707e4977f77792042d4a5015fb188aae4772e/library/nextBrowserTick.min.js"
+      ]
+    },
+    {
+      "id": "gf-550443",
+      "name": "Youtube-Adblock v5.0",
+      "description": "Blocks and skips YouTube video ads.",
+      "install_url": "https://update.greasyfork.org/scripts/550443/Youtube-Adblock%20v50.user.js",
+      "homepage": "https://greasyfork.org/scripts/550443",
+      "sites": [
+        "*.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-575941",
+      "name": "YouTube Ads-Bypass",
+      "description": "Bypasses YouTube video ads on YouTube and YouTube Music.",
+      "install_url": "https://update.greasyfork.org/scripts/575941/YouTube%20Ads-Bypass.user.js",
+      "homepage": "https://greasyfork.org/scripts/575941",
+      "sites": [
+        "www.youtube.com",
+        "music.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-554221",
+      "name": "YouTube: Hide \"Members Only\" Videos",
+      "description": "Hides members-only videos from YouTube listings.",
+      "install_url": "https://update.greasyfork.org/scripts/554221/YouTube%3A%20Hide%20%22Members%20Only%22%20Videos.user.js",
+      "homepage": "https://greasyfork.org/scripts/554221",
+      "sites": [
+        "www.youtube.com"
+      ],
+      "category": "youtube",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-545419",
+      "name": "X/Twitter Clean-up & Wide Layout Display",
+      "description": "Cleans up the X/Twitter interface and offers a wide layout.",
+      "install_url": "https://update.greasyfork.org/scripts/545419/XTwitter%20Clean-up%20%20Wide%20Layout%20Display.user.js",
+      "homepage": "https://greasyfork.org/scripts/545419",
+      "sites": [
+        "x.com",
+        "twitter.com"
+      ],
+      "category": "social",
+      "licence": "MIT",
+      "needs_gm": "basic",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-382572",
+      "name": "Hide Reddit's promoted posts",
+      "description": "Hides promoted posts on the Reddit front page and subreddits.",
+      "install_url": "https://update.greasyfork.org/scripts/382572/Hide%20Reddit%27s%20promoted%20posts.user.js",
+      "homepage": "https://greasyfork.org/scripts/382572",
+      "sites": [
+        "www.reddit.com"
+      ],
+      "category": "social",
+      "licence": null,
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-546618",
+      "name": "Reddit Comment Auto-Expander (Smooth)",
+      "description": "Automatically expands collapsed Reddit comments.",
+      "install_url": "https://update.greasyfork.org/scripts/546618/Reddit%20Comment%20Auto-Expander%20%28Smooth%29.user.js",
+      "homepage": "https://greasyfork.org/scripts/546618",
+      "sites": [
+        "*.reddit.com"
+      ],
+      "category": "social",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-550390",
+      "name": "GitHub Wide Markdown",
+      "description": "Widens the rendered Markdown view on GitHub.",
+      "install_url": "https://update.greasyfork.org/scripts/550390/GitHub%20Wide%20Markdown.user.js",
+      "homepage": "https://greasyfork.org/scripts/550390",
+      "sites": [
+        "github.com"
+      ],
+      "category": "github",
+      "licence": "GPL-3.0-or-later",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-532704",
+      "name": "GitHub Repository Size Checker",
+      "description": "Shows the size of a GitHub repository using the GitHub API.",
+      "install_url": "https://update.greasyfork.org/scripts/532704/GitHub%20Repository%20Size%20Checker.user.js",
+      "homepage": "https://greasyfork.org/scripts/532704",
+      "sites": [
+        "github.com"
+      ],
+      "category": "github",
+      "licence": null,
+      "needs_gm": "xhr",
+      "connect": [
+        "api.github.com"
+      ],
+      "requires": []
+    },
+    {
+      "id": "gf-519050",
+      "name": "Reject cookie banners",
+      "description": "Automatically rejects cookie consent banners.",
+      "install_url": "https://update.greasyfork.org/scripts/519050/Reject%20cookie%20banners.user.js",
+      "homepage": "https://greasyfork.org/scripts/519050",
+      "sites": [
+        "*"
+      ],
+      "category": "cookie-banners",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-575949",
+      "name": "Auto Decline Cookies & Analytics",
+      "description": "Automatically declines cookie and analytics consent prompts.",
+      "install_url": "https://update.greasyfork.org/scripts/575949/Auto%20Decline%20Cookies%20%20Analytics.user.js",
+      "homepage": "https://greasyfork.org/scripts/575949",
+      "sites": [
+        "*"
+      ],
+      "category": "cookie-banners",
+      "licence": null,
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-522645",
+      "name": "I don't care about cookies",
+      "description": "Userscript port of the I don't care about cookies rules to hide consent banners.",
+      "install_url": "https://update.greasyfork.org/scripts/522645/I%20don%27t%20care%20about%20cookies.user.js",
+      "homepage": "https://greasyfork.org/scripts/522645",
+      "sites": [
+        "*"
+      ],
+      "category": "cookie-banners",
+      "licence": "GPL-3.0-only",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    }
+  ]
+}
