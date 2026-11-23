@@ -27,6 +27,17 @@ publishes `<id>.txt`, `<id>.txt.minisig`, `meta.json` and `meta.json.minisig` as
 `metril/argus-lists`. Argus reads them from
 `https://github.com/metril/argus-lists/releases/latest/download/<file>`.
 
+## Catalogues
+
+`catalog/filters.json` (`{"schema":1,"entries":[{id,name,description,url,format,category,licence,homepage,region?}]}`,
+`format` is `abp|ubo|adguard|hosts|domains|ips`) and `catalog/userscripts.json` (`{"schema":1,"entries":[{id,name,
+description,install_url,homepage,sites,category,licence,needs_gm,connect}]}`, `needs_gm` is `none|basic|xhr`,
+`licence` may be null) are copied into the release and signed like the lists (`filters.json`, `userscripts.json`
+plus `.minisig`). They only point at third-party lists and scripts; nothing is mirrored. `scripts/validate.py` checks
+schema, unique ids, https, formats, categories and `.user.js` URLs; `validate.py --net` fetches every URL, checks
+userscript headers (`@name`, `@updateURL`/`@downloadURL`) and flags entries not modified for 2 years.
+`.github/workflows/catalog-check.yml` runs it weekly and opens or updates a "Catalog check failing" issue.
+
 ## Signing key
 
 Generate an unencrypted key pair once, keep the secret key only in the repository secret, and put

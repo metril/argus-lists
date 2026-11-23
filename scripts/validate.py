@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Validate lists/*.txt and meta.json. Errors fail the build; DNS problems only warn."""
+"""Validate lists/*.txt, meta.json and catalog/*.json. Errors fail the build; DNS problems only warn.
+
+--net checks the catalog URLs over the network (and skips the list checks); used by the scheduled job."""
 import json, re, socket, sys, pathlib
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "generator"))
+sys.path.insert(0, str(ROOT / "scripts"))
+import catalog  # noqa: E402
 from common import PSL, LABEL  # noqa: E402  (ASCII/punycode hostname labels)
 
 # Argus skips single-label names, anything that is itself a public suffix (full PSL, private section
@@ -62,7 +66,18 @@ def resolves(host):
         return False
 
 
+def main_net():
+    docs, errs = catalog.load()
+    errs += catalog.check_net(docs)
+    for e in errs:
+        print(f"::error::{e}")
+    print(f"{sum(len(d.get('entries', [])) for d in docs.values())} catalog entries checked, {len(errs)} errors")
+    sys.exit(1 if errs else 0)
+
+
 def main():
+    if "--net" in sys.argv[1:]:
+        main_net()
     meta = json.loads((ROOT / "meta.json").read_text())
     ids = [c["id"] for c in meta["categories"]]
     for c in meta["categories"]:
@@ -100,6 +115,7 @@ def main():
         for host, ok in zip(sample, ex.map(resolves, sample)):
             if not ok:
                 warnings.append(f"{host} does not resolve")
+    errors.extend(catalog.load()[1])
     for w in warnings:
         print(f"::warning::{w}")
     for e in errors:
@@ -108,4 +124,5 @@ def main():
     sys.exit(1 if errors else 0)
 
 
-main()
+if __name__ == "__main__":
+    main()

@@ -22,3 +22,12 @@ names) are extracted. `generated/provenance.jsonl` records the source and entity
 * **GOV.UK / other Open Government Licence domain lists:** `*.gov.uk` and the other national
   government namespaces are already covered by wildcards in `lists/government/manual.txt`, so a
   list would add nothing; no OGL data is included and no attribution file is needed.
+
+## Catalogues
+
+`catalog/filters.json` and `catalog/userscripts.json` are hand-curated indexes of third-party filter lists
+(EasyList, uBlock Origin, AdGuard, Fanboy, regional lists, hosts/domain/IP feeds) and Greasy Fork userscripts.
+Only metadata (name, URL, licence as stated by the publisher) is stored; no list or script content is
+redistributed, and each entry's `licence` field records the upstream licence. Paywall-bypass scripts and video
+downloaders are excluded. The userscript entries were filled from the `@name`, `@license`, `@match`, `@grant` and
+`@connect` headers.

@@ -1,0 +1,373 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "id": "easylist",
+      "name": "EasyList",
+      "description": "The primary ad-blocking filter list.",
+      "url": "https://easylist.to/easylist/easylist.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/"
+    },
+    {
+      "id": "easyprivacy",
+      "name": "EasyPrivacy",
+      "description": "Removes tracking and data collection.",
+      "url": "https://easylist.to/easylist/easyprivacy.txt",
+      "format": "abp",
+      "category": "privacy",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/"
+    },
+    {
+      "id": "ublock-filters",
+      "name": "uBlock filters",
+      "description": "Core uBlock Origin filters for ads and trackers.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/filters.min.txt",
+      "format": "ubo",
+      "category": "ads",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/uBlockOrigin/uAssets"
+    },
+    {
+      "id": "ublock-badware",
+      "name": "uBlock filters - Badware risks",
+      "description": "Blocks malware, phishing and other badware domains.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/badware.min.txt",
+      "format": "ubo",
+      "category": "malware",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/uBlockOrigin/uAssets"
+    },
+    {
+      "id": "ublock-privacy",
+      "name": "uBlock filters - Privacy",
+      "description": "Privacy-focused additions to the uBlock filters.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/privacy.min.txt",
+      "format": "ubo",
+      "category": "privacy",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/uBlockOrigin/uAssets"
+    },
+    {
+      "id": "ublock-annoyances",
+      "name": "uBlock filters - Annoyances",
+      "description": "Cookie notices, popups, newsletter prompts and other page annoyances.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/annoyances.min.txt",
+      "format": "ubo",
+      "category": "annoyances",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/uBlockOrigin/uAssets"
+    },
+    {
+      "id": "ublock-unbreak",
+      "name": "uBlock filters - Unbreak",
+      "description": "Exceptions that fix sites broken by other filters.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/unbreak.min.txt",
+      "format": "ubo",
+      "category": "unbreak",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/uBlockOrigin/uAssets"
+    },
+    {
+      "id": "ublock-quick-fixes",
+      "name": "uBlock filters - Quick fixes",
+      "description": "Short-lived fixes for new ad and anti-adblock changes.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/quick-fixes.min.txt",
+      "format": "ubo",
+      "category": "ads",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/uBlockOrigin/uAssets"
+    },
+    {
+      "id": "adguard-base",
+      "name": "AdGuard Base",
+      "description": "AdGuard's general ad-blocking filter, without EasyList rules.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/2_without_easylist.txt",
+      "format": "adguard",
+      "category": "ads",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+    },
+    {
+      "id": "adguard-tracking",
+      "name": "AdGuard Tracking Protection",
+      "description": "Blocks trackers and analytics.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/3.txt",
+      "format": "adguard",
+      "category": "privacy",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+    },
+    {
+      "id": "adguard-annoyances",
+      "name": "AdGuard Annoyances",
+      "description": "Cookie notices, popups, widgets and other annoyances.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/14.txt",
+      "format": "adguard",
+      "category": "annoyances",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+    },
+    {
+      "id": "adguard-social",
+      "name": "AdGuard Social Media",
+      "description": "Hides social media buttons and widgets.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/4.txt",
+      "format": "adguard",
+      "category": "social",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+    },
+    {
+      "id": "adguard-mobile",
+      "name": "AdGuard Mobile Ads",
+      "description": "Ads on mobile-oriented sites.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/11.txt",
+      "format": "adguard",
+      "category": "ads",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+    },
+    {
+      "id": "adguard-url-tracking",
+      "name": "AdGuard URL Tracking",
+      "description": "Strips tracking parameters from URLs.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/17.txt",
+      "format": "adguard",
+      "category": "privacy",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+    },
+    {
+      "id": "fanboy-annoyance",
+      "name": "Fanboy's Annoyance List",
+      "description": "Cookie notices, in-page popups and other annoyances.",
+      "url": "https://easylist.to/easylist/fanboy-annoyance.txt",
+      "format": "abp",
+      "category": "annoyances",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/"
+    },
+    {
+      "id": "fanboy-social",
+      "name": "Fanboy's Social Blocking List",
+      "description": "Hides social media content and widgets.",
+      "url": "https://easylist.to/easylist/fanboy-social.txt",
+      "format": "abp",
+      "category": "social",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/"
+    },
+    {
+      "id": "peter-lowe-abp",
+      "name": "Peter Lowe's Ad and tracking server list (ABP)",
+      "description": "Ad and tracking server list in Adblock Plus format.",
+      "url": "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&showintro=1&mimetype=plaintext",
+      "format": "abp",
+      "category": "ads+tracking",
+      "licence": "free for personal use",
+      "homepage": "https://pgl.yoyo.org/adservers/"
+    },
+    {
+      "id": "easylist-germany",
+      "name": "EasyList Germany",
+      "description": "Ad filters for German-language sites.",
+      "url": "https://easylist.to/easylistgermany/easylistgermany.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/",
+      "region": "de"
+    },
+    {
+      "id": "easylist-italy",
+      "name": "EasyList Italy",
+      "description": "Ad filters for Italian sites.",
+      "url": "https://easylist-downloads.adblockplus.org/easylistitaly.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/",
+      "region": "it"
+    },
+    {
+      "id": "easylist-dutch",
+      "name": "EasyList Dutch",
+      "description": "Ad filters for Dutch sites.",
+      "url": "https://easylist-downloads.adblockplus.org/easylistdutch.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/",
+      "region": "nl"
+    },
+    {
+      "id": "liste-fr",
+      "name": "Liste FR",
+      "description": "Ad filters for French sites.",
+      "url": "https://easylist-downloads.adblockplus.org/liste_fr.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "GPL-3.0",
+      "homepage": "https://forums.lanik.us/viewforum.php?f=91",
+      "region": "fr"
+    },
+    {
+      "id": "abpindo",
+      "name": "ABPindo",
+      "description": "Ad filters for Indonesian sites.",
+      "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/abpindo.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "CC-BY-SA-4.0",
+      "homepage": "https://github.com/ABPindo/indonesianadblockrules",
+      "region": "id"
+    },
+    {
+      "id": "ruadlist",
+      "name": "RuAdList",
+      "description": "Ad filters for Russian sites (Adblock Plus advblock list).",
+      "url": "https://easylist-downloads.adblockplus.org/advblock.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "CC-BY-SA-3.0",
+      "homepage": "https://forums.lanik.us/viewforum.php?f=102",
+      "region": "ru"
+    },
+    {
+      "id": "easylist-china",
+      "name": "EasyList China",
+      "description": "Ad filters for Chinese sites.",
+      "url": "https://easylist-downloads.adblockplus.org/easylistchina.txt",
+      "format": "abp",
+      "category": "ads",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/",
+      "region": "zh"
+    },
+    {
+      "id": "adguard-japanese",
+      "name": "AdGuard Japanese",
+      "description": "Ad filters for Japanese sites.",
+      "url": "https://filters.adtidy.org/extension/ublock/filters/7.txt",
+      "format": "adguard",
+      "category": "ads",
+      "licence": "GPL-3.0",
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "region": "ja"
+    },
+    {
+      "id": "stevenblack-unified",
+      "name": "StevenBlack Unified Hosts",
+      "description": "Unified ads and malware hosts list.",
+      "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+      "format": "hosts",
+      "category": "ads+malware",
+      "licence": "MIT",
+      "homepage": "https://github.com/StevenBlack/hosts"
+    },
+    {
+      "id": "adaway",
+      "name": "AdAway",
+      "description": "Mobile ad and analytics providers.",
+      "url": "https://adaway.org/hosts.txt",
+      "format": "hosts",
+      "category": "ads",
+      "licence": "CC BY 3.0",
+      "homepage": "https://adaway.org/"
+    },
+    {
+      "id": "peter-lowe",
+      "name": "Peter Lowe's Ad and tracking server list",
+      "description": "Ad and tracking servers in hosts format.",
+      "url": "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext",
+      "format": "hosts",
+      "category": "ads+tracking",
+      "licence": "free for personal use",
+      "homepage": "https://pgl.yoyo.org/adservers/"
+    },
+    {
+      "id": "blocklistproject-ads",
+      "name": "The Block List Project: Ads",
+      "description": "Advertising domains.",
+      "url": "https://blocklistproject.github.io/Lists/ads.txt",
+      "format": "hosts",
+      "category": "ads",
+      "licence": "Unlicense",
+      "homepage": "https://github.com/blocklistproject/Lists"
+    },
+    {
+      "id": "hagezi-light-domains",
+      "name": "HaGeZi Light (domains)",
+      "description": "Basic ad and tracking protection with few false positives.",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/light-onlydomains.txt",
+      "format": "domains",
+      "category": "ads+tracking",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/hagezi/dns-blocklists"
+    },
+    {
+      "id": "hagezi-pro-domains",
+      "name": "HaGeZi Pro (domains)",
+      "description": "Extended ad, tracking and malware protection.",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
+      "format": "domains",
+      "category": "ads+tracking+malware",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/hagezi/dns-blocklists"
+    },
+    {
+      "id": "hagezi-tif-domains",
+      "name": "HaGeZi Threat Intelligence Feeds (domains)",
+      "description": "Malware, phishing and scam domains from threat feeds.",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif-onlydomains.txt",
+      "format": "domains",
+      "category": "malware",
+      "licence": "GPL-3.0",
+      "homepage": "https://github.com/hagezi/dns-blocklists"
+    },
+    {
+      "id": "oisd-small",
+      "name": "OISD Small (domains)",
+      "description": "Compact list aimed at not breaking sites.",
+      "url": "https://small.oisd.nl/domainswild2",
+      "format": "domains",
+      "category": "ads+tracking+malware",
+      "licence": "GPL-3.0",
+      "homepage": "https://oisd.nl/"
+    },
+    {
+      "id": "phishing-army",
+      "name": "Phishing Army",
+      "description": "Community phishing domain list.",
+      "url": "https://phishing.army/download/phishing_army_blocklist.txt",
+      "format": "domains",
+      "category": "phishing",
+      "licence": "CC BY-NC 4.0",
+      "homepage": "https://phishing.army/"
+    },
+    {
+      "id": "spamhaus-drop",
+      "name": "Spamhaus DROP (IP ranges)",
+      "description": "Network ranges controlled by spammers and criminals.",
+      "url": "https://www.spamhaus.org/drop/drop.txt",
+      "format": "ips",
+      "category": "malware",
+      "licence": "free for non-commercial use",
+      "homepage": "https://www.spamhaus.org/drop/"
+    },
+    {
+      "id": "feodo-ips",
+      "name": "Feodo Tracker IP Blocklist",
+      "description": "Botnet command-and-control IP addresses.",
+      "url": "https://feodotracker.abuse.ch/downloads/ipblocklist.txt",
+      "format": "ips",
+      "category": "malware",
+      "licence": "CC0",
+      "homepage": "https://feodotracker.abuse.ch/blocklist/"
+    }
+  ]
+}

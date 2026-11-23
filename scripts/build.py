@@ -42,4 +42,6 @@ meta["version"] = version
 roots = ROOT / "roots" / "roots.json"
 if roots.exists():
     shutil.copy(roots, dist / "roots.json")
+for c in sorted((ROOT / "catalog").glob("*.json")):
+    shutil.copy(c, dist / c.name)
 print(f"built {version}: {len(meta['categories'])} lists")
