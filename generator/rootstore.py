@@ -547,7 +547,9 @@ def pr_body(added):
              "see the diff for CT log and constraint changes.", "",
              f"Source report: {CCADB_URL}", "",
              "To reject a root: open a normal PR to main adding its sha256 to `roots/rejected.txt` with a `#` comment "
-             "giving the reason. The next daily run then leaves it out and this PR updates or closes itself. "
+             "giving the reason. If the root is already published, the same PR must also remove it from "
+             "`roots/roots.json` with a serial bump (validation fails otherwise). The next daily run then leaves it out "
+             "and this PR updates or closes itself. "
              "Do not edit this branch; it is rebuilt on main every run. Removing a line from `rejected.txt` "
              "is a reviewed change too.", "",
              "| Subject | SHA-256 | Links |", "|---|---|---|"]
@@ -633,7 +635,8 @@ def validate(doc, prev_serial=None, min_roots=MIN_FINAL_ROOTS, rejected=frozense
         raise RootError("roots not sorted by sha256 or duplicated")
     for r in roots:
         if r.get("sha256") in rejected:
-            raise RootError(f"root {r['sha256']} is listed in roots/rejected.txt")
+            raise RootError(f"root {r['sha256']} is listed in roots/rejected.txt; rejecting an already-published root "
+                            "must remove it from roots/roots.json in the same PR, with a serial bump")
         if set(r) != {"sha256", "subject", "der", "distrust_after", "sct_not_after", "permitted_dns_names"}:
             raise RootError(f"bad root keys: {r.get('sha256')}")
         der = base64.b64decode(r["der"], validate=True)

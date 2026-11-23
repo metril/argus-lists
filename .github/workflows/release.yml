@@ -42,6 +42,8 @@ jobs:
           tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null || true)
           commit=""
           if [ -n "$tag" ]; then commit=$(git rev-parse -q --verify "refs/tags/$tag^{commit}" || true); fi
+          # a tag that is not an ancestor of HEAD gives no usable range: check the head commit only
+          if [ -n "$commit" ]; then git merge-base --is-ancestor "$commit" HEAD || commit=""; fi
           python scripts/validate_roots.py $prev --require-approval ${commit:+--prev-commit "$commit"}
 
   release:

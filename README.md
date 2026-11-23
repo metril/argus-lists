@@ -69,7 +69,8 @@ split) and a `publish` job that only commits files, opens the PR and dispatches 
   every run, left alone when only `serial`/`generated_at` would change, and the PR is closed (branch
   deleted) when nothing is left to review, so a stale PR cannot reintroduce a removed root.
 * A root listed in `roots/rejected.txt` (sha256 per line, `#` reason) is never published, so a rejected
-  root does not reopen the PR every day; reject one with a normal reviewed PR to `main`.
+  root does not reopen the PR every day; reject one with a normal reviewed PR to `main`; if the root is already published, that PR must also remove
+  it from `roots/roots.json` with a serial bump (validation fails otherwise).
 * `publish` checks out exactly the `main` commit that `generate` saw; if `main` moved meanwhile the push is
   non-fast-forward and the run is skipped (the next run redoes it).
 * `release.yml` runs only on `main`, validates (`scripts/validate_roots.py`), refuses a serial that is not greater than the

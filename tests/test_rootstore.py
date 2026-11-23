@@ -525,7 +525,7 @@ def test_generate_excludes_rejected_and_validate_rejects(tmp_path):
     doc = json.loads(out.read_text())
     assert sha(ds[0]) not in {x["sha256"] for x in doc["roots"]} and len(doc["roots"]) == rs.MIN_ROOTS + 2
     rs.validate(doc, rejected={sha(ds[0])})
-    with pytest.raises(rs.RootError, match="rejected"):
+    with pytest.raises(rs.RootError, match="same PR, with a serial bump"):
         rs.validate(doc, rejected={doc["roots"][0]["sha256"]})
     assert "roots/rejected.txt" in rs.pr_body([])
 
@@ -558,4 +558,6 @@ def test_workflows_race_and_release_guards():
     assert "ref: main" not in roots.split("publish:")[1]
     rel = (wf / "release.yml").read_text()
     assert rel.count("if: github.ref == 'refs/heads/main'") == 2  # validate and release
+    assert 'git merge-base --is-ancestor "$commit" HEAD || commit=""' in rel
+    assert rel.index("merge-base --is-ancestor") < rel.index("validate_roots.py $prev")
     assert '--target "$GITHUB_SHA"' in rel and "--prev-commit" in rel
