@@ -2,7 +2,7 @@ name: test
 
 on:
   pull_request:
-  workflow_dispatch:   # roots.yml dispatches it on roots/auto (GITHUB_TOKEN pushes trigger nothing)
+  workflow_dispatch:   # manual runs
   push:
     branches: [main]
 

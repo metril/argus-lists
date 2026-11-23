@@ -466,8 +466,10 @@ def test_workflows_pinned_and_guarded():
             if m:
                 assert re.search(r"@[0-9a-f]{40}$", m.group(1)), (f.name, line)
     roots = (wf / "roots.yml").read_text()
-    assert "gh pr close roots/auto --delete-branch" in roots and "workflow run release.yml" in roots
-    assert "workflow_dispatch" in (wf / "test.yml").read_text()
+    assert "gh pr close roots/auto --delete-branch" in roots
+    assert "ssh-key: ${{ secrets.ROOTS_DEPLOY_KEY }}" in roots.split("publish:")[1]
+    assert "gh workflow run" not in roots and "actions: write" not in roots
+    assert "workflow_dispatch" in (wf / "release.yml").read_text()
     rel = (wf / "release.yml").read_text()
     assert "--require-approval" in rel and '404)' in rel
 

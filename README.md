@@ -59,10 +59,10 @@ job rather than being ignored, and `min_version`/`max_version_exclusive` blocks 
 current stable version (VersionHistory API; the job fails if it cannot be read).
 
 `.github/workflows/roots.yml` runs daily in two jobs: a read-only `generate` job (regenerate, validate,
-split) and a `publish` job that only commits files, opens the PR and dispatches workflows.
+split) and a `publish` job that only commits files, opens the PR.
 
 * Stricter changes (removals, new or earlier `distrust_after`/`sct_not_after`, narrower DNS lists, logs
-  removed or retired) are committed straight to `main` and `release.yml` is dispatched, even while a
+  removed or retired) are committed straight to `main` (which triggers `release.yml`), even while a
   loosening is waiting.
 * Anything that loosens trust (an addition, a removed or later date, a widened constraint) goes on top of
   that into the rolling `roots/auto` PR (never auto-merged). The branch is rebuilt on the current `main`
@@ -79,10 +79,13 @@ split) and a `publish` job that only commits files, opens the PR and dispatches 
   came from a merged PR into `main` and the head does not loosen that commit's `roots.json`. It publishes `roots.json` and
   `roots.json.minisig` next to the lists.
 
-Repository settings the workflows rely on: Actions may create pull requests; on `main` require pull
-request review and enable "dismiss stale approvals", and allow `github-actions[bot]` to push (needed for
-the stricter auto-commit; a `GITHUB_TOKEN` push triggers no workflows, hence the explicit dispatches of
-`release.yml` and, on `roots/auto`, `test.yml`).
+Repository settings the workflows rely on: Actions may create pull requests. `main` is protected by a
+ruleset requiring a pull request with 1 approval and dismissing stale approvals; only the admin role and
+deploy keys may bypass it. The `GITHUB_TOKEN` bot cannot bypass on a personal repo, so the `publish` job
+pushes over SSH with a write deploy key stored in the repo secret `ROOTS_DEPLOY_KEY` (checkout `ssh-key`).
+Unlike `GITHUB_TOKEN` pushes, deploy-key pushes trigger workflows: the push to `main` runs `release.yml`
+and the force-push to `roots/auto` updates the PR and runs `test.yml`. `gh` still uses `GITHUB_TOKEN` for
+the PR (`contents: write`, `pull-requests: write`).
 
 Dependencies are pinned by hash (`requirements.txt`, `requirements-dev.txt`, compiled from the `.in`
 files with `uv pip compile --universal --generate-hashes`; install with `--require-hashes`) and actions by
