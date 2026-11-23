@@ -1,0 +1,4 @@
+# Roots that must never be added to roots.json: one sha256 (lowercase hex) per line, reason after '#'.
+# The generator leaves these out, so a rejected root does not reopen the review PR every day.
+# Rejecting an already-published root must remove it from roots/roots.json in the same PR, with a serial bump.
+# Changing this file needs a reviewed PR to main, like any other change.

@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches: [main]
-    paths: ["lists/**", "meta.json", "scripts/**", ".github/workflows/release.yml"]
+    paths: ["lists/**", "roots/**", "meta.json", "scripts/**", ".github/workflows/release.yml"]
   workflow_dispatch:
 
 permissions:
@@ -11,16 +11,43 @@ permissions:
 
 jobs:
   validate:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0   # the range since the last release is walked for an approving merged PR
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Validate lists
         run: python scripts/validate.py
+      - name: Validate the root store
+        run: |
+          pip install -q --require-hashes -r requirements.txt
+          # only a 404 means "no previous release"; any other failure stops the release
+          code=$(curl -sSL -o "$RUNNER_TEMP/prev-roots.json" -w '%{http_code}' \
+            "https://github.com/${{ github.repository }}/releases/latest/download/roots.json") || code=000
+          case "$code" in
+            200) prev="--previous $RUNNER_TEMP/prev-roots.json" ;;
+            404) prev="" ;;
+            *) echo "::error::fetching the published roots.json failed (HTTP $code)"; exit 1 ;;
+          esac
+          # the release tag points at the commit that was published (see "Publish release assets")
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null || true)
+          commit=""
+          if [ -n "$tag" ]; then commit=$(git rev-parse -q --verify "refs/tags/$tag^{commit}" || true); fi
+          # a tag that is not an ancestor of HEAD gives no usable range: check the head commit only
+          if [ -n "$commit" ]; then git merge-base --is-ancestor "$commit" HEAD || commit=""; fi
+          python scripts/validate_roots.py $prev --require-approval ${commit:+--prev-commit "$commit"}
 
   release:
+    if: github.ref == 'refs/heads/main'
     needs: validate
     runs-on: ubuntu-latest
     steps:
@@ -32,8 +59,8 @@ jobs:
             echo "::error::ARGUS_LISTS_SIGNING_KEY is not set. Nothing is published unsigned."
             exit 1
           fi
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Pick the version (vYYYY.MM.DD, then .N for further releases that day)
@@ -68,6 +95,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ steps.ver.outputs.version }}" dist/* \
-            --repo "$GITHUB_REPOSITORY" --latest \
+            --repo "$GITHUB_REPOSITORY" --latest --target "$GITHUB_SHA" \
             --title "${{ steps.ver.outputs.version }}" \
             --notes "Curated bypass lists for Argus. Each file has a .minisig signature."

@@ -1,0 +1,124 @@
+name: roots
+
+on:
+  schedule:
+    - cron: "43 4 * * *"   # daily
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency: roots
+
+jobs:
+  # Read-only: regenerate, validate, split into a stricter-only document and a review document.
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+      stricter: ${{ steps.split.outputs.stricter }}
+      review: ${{ steps.split.outputs.review }}
+      branch_fresh: ${{ steps.split.outputs.branch_fresh }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - run: pip install -q --require-hashes -r requirements.txt
+      - name: Record the main commit this run is based on
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Regenerate (fails loudly if CCADB and certdata disagree)
+        run: |
+          cp roots/roots.json "$RUNNER_TEMP/old.json"
+          python generator/rootstore.py generate
+          python scripts/validate_roots.py
+      - name: Split into stricter-only and review documents
+        id: split
+        run: |
+          # content of the rolling branch, if it exists and sits on top of today's main
+          if git rev-parse -q --verify origin/roots/auto >/dev/null \
+             && git merge-base --is-ancestor origin/main origin/roots/auto; then
+            git show origin/roots/auto:roots/roots.json > "$RUNNER_TEMP/branch.json"
+          fi
+          mkdir out
+          python generator/rootstore.py split "$RUNNER_TEMP/old.json" roots/roots.json \
+            --outdir out --branch "$RUNNER_TEMP/branch.json" | tee "$RUNNER_TEMP/split.txt"
+          cat "$RUNNER_TEMP/split.txt" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: roots-out
+          path: out
+          if-no-files-found: ignore
+
+  # Write access, no generator code: commit files, open or update the PR, dispatch workflows.
+  publish:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write        # push to main (stricter changes) or roots/auto
+      pull-requests: write
+      actions: write         # dispatch release.yml and test.yml (GITHUB_TOKEN pushes trigger nothing)
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ needs.generate.outputs.sha }}   # exactly what generate saw, so a merge in between is never reverted
+          fetch-depth: 0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: roots-out
+          path: out
+        continue-on-error: true
+      - name: Apply the approval policy
+        env:
+          STRICTER: ${{ needs.generate.outputs.stricter }}
+          REVIEW: ${{ needs.generate.outputs.review }}
+          FRESH: ${{ needs.generate.outputs.branch_fresh }}
+        run: |
+          git config user.name "metril"
+          git config user.email "1517921+metril@users.noreply.github.com"
+          if [ "$STRICTER" = yes ]; then
+            # removals, new or earlier dates, narrower constraints, retired logs: straight to main,
+            # even while a loosening is waiting for review
+            cp out/stricter.json roots/roots.json
+            git add roots/roots.json
+            git commit -m "Update root store (stricter changes only)"
+            if ! git push origin HEAD:main; then
+              echo "main moved while the job ran (non-fast-forward); skipping, the next run redoes this"
+              exit 0
+            fi
+            gh workflow run release.yml --ref main
+          fi
+          if [ "$REVIEW" != yes ]; then
+            # nothing left to review: a stale rolling PR could reintroduce a removed root
+            if gh pr view roots/auto --json state -q .state 2>/dev/null | grep -q OPEN; then
+              gh pr close roots/auto --delete-branch --comment "Superseded: the root store no longer has changes awaiting review."
+            fi
+            exit 0
+          fi
+          # loosening (additions, removed or later dates or constraints): one rolling PR, rebased on
+          # the current main every run, never auto-merged
+          if [ "$STRICTER" = yes ] || [ "$FRESH" != yes ]; then
+            git checkout -B roots/auto
+            cp out/review.json roots/roots.json
+            git add roots/roots.json
+            git commit -m "Update root store (additions and loosening)"
+            git push --force origin roots/auto
+            gh workflow run test.yml --ref roots/auto
+          fi
+          printf '\n(Generated by the roots workflow. Review each root before merging.)\n' >> out/body.md
+          if gh pr view roots/auto --json state -q .state 2>/dev/null | grep -q OPEN; then
+            gh pr edit roots/auto --body-file out/body.md
+          else
+            gh pr create --base main --head roots/auto \
+              --title "Update root store (additions and loosening)" --body-file out/body.md
+          fi

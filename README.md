@@ -45,3 +45,45 @@ Argus never installs a list older than the one it already has.
 `lists/<category>/generated.txt` from Wikidata, FDIC BankFind and CISA dotgov-data; see
 `SOURCES.md` for licences and `generator/config.toml` / `generator/deny.txt` for what is pulled and
 dropped. `generated/provenance.jsonl` records where each domain came from (not published).
+
+## TLS root store
+
+`roots/roots.json` is the approved Mozilla root set (Websites trust bit, restricted to the Chrome Root
+Store) that Argus uses for certificate verification and chain display, with Chrome's per-root
+`sct_not_after` / `permitted_dns_names` constraints and the Google-signed CT log list as `ct_logs`
+(RFC 6962 and tiled logs, `"type":"rfc6962"|"static"`; the signature is verified against a pinned key
+when fetched). `generator/rootstore.py` builds it from the CCADB "Mozilla included CA certificates" CSV,
+cross-checked against NSS `certdata.txt`; the job fails if they differ by more than 3 roots. Roots absent
+from the Chrome Root Store are dropped; Chrome-only roots are never added. Unknown Chrome fields fail the
+job rather than being ignored, and `min_version`/`max_version_exclusive` blocks are evaluated against Chrome's
+current stable version (VersionHistory API; the job fails if it cannot be read).
+
+`.github/workflows/roots.yml` runs daily in two jobs: a read-only `generate` job (regenerate, validate,
+split) and a `publish` job that only commits files, opens the PR and dispatches workflows.
+
+* Stricter changes (removals, new or earlier `distrust_after`/`sct_not_after`, narrower DNS lists, logs
+  removed or retired) are committed straight to `main` and `release.yml` is dispatched, even while a
+  loosening is waiting.
+* Anything that loosens trust (an addition, a removed or later date, a widened constraint) goes on top of
+  that into the rolling `roots/auto` PR (never auto-merged). The branch is rebuilt on the current `main`
+  every run, left alone when only `serial`/`generated_at` would change, and the PR is closed (branch
+  deleted) when nothing is left to review, so a stale PR cannot reintroduce a removed root.
+* A root listed in `roots/rejected.txt` (sha256 per line, `#` reason) is never published, so a rejected
+  root does not reopen the PR every day; reject one with a normal reviewed PR to `main`; if the root is already published, that PR must also remove
+  it from `roots/roots.json` with a serial bump (validation fails otherwise).
+* `publish` checks out exactly the `main` commit that `generate` saw; if `main` moved meanwhile the push is
+  non-fast-forward and the run is skipped (the next run redoes it).
+* `release.yml` runs only on `main`, validates (`scripts/validate_roots.py`), refuses a serial that is not greater than the
+  published one, fails on any error fetching the published file other than 404, and refuses a loosening
+  unless some commit since the last published release (the release tag points at the published commit)
+  came from a merged PR into `main` and the head does not loosen that commit's `roots.json`. It publishes `roots.json` and
+  `roots.json.minisig` next to the lists.
+
+Repository settings the workflows rely on: Actions may create pull requests; on `main` require pull
+request review and enable "dismiss stale approvals", and allow `github-actions[bot]` to push (needed for
+the stricter auto-commit; a `GITHUB_TOKEN` push triggers no workflows, hence the explicit dispatches of
+`release.yml` and, on `roots/auto`, `test.yml`).
+
+Dependencies are pinned by hash (`requirements.txt`, `requirements-dev.txt`, compiled from the `.in`
+files with `uv pip compile --universal --generate-hashes`; install with `--require-hashes`) and actions by
+commit SHA. Tests: `pip install --require-hashes -r requirements-dev.txt && pytest -n auto tests`.
