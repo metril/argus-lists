@@ -6,6 +6,8 @@
 *.gov
 *.mil
 *.gov.uk
+*.gov.scot
+*.gov.wales
 *.gov.au
 *.gc.ca
 *.gov.ie

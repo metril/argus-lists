@@ -90,6 +90,11 @@ def main():
         for e in entries:
             (m_wild if e.startswith("*.") else m_exact).add(e[2:] if e.startswith("*.") else e)
 
+    # Allowed wildcards (scripts/allowed-wildcards.txt) cover their namespace; never emit a bare suffix
+    # (rejected by the full-PSL check below) that one of them expresses.
+    for l in read_list(ROOT / "scripts" / "allowed-wildcards.txt"):
+        m_wild.add(l[2:])
+
     def covered(d):
         s = suffixes(d)
         return any(x in m_exact for x in s) or any(x in m_wild for x in s[1:])

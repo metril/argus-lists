@@ -26,3 +26,6 @@
 *.overheid.nl
 *.bund.de
 *.gouv.qc.ca
+*.nhs.uk
+*.gov.scot
+*.gov.wales
