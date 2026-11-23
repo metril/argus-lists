@@ -1,0 +1,53 @@
+# Certificate-pinned apps
+# Push and messaging services whose apps reject an intercepting certificate. Each domain also covers its subdomains.
+# One host or *.suffix per line. A bare domain covers the domain and its subdomains;
+# *.suffix covers subdomains only. Lines starting with # are comments.
+
+push.apple.com
+courier.push.apple.com
+icloud.com
+icloud-content.com
+apple-cloudkit.com
+cdn-apple.com
+me.com
+mzstatic.com
+imessage.apple.com
+ess.apple.com
+setup.icloud.com
+appleid.apple.com
+idmsa.apple.com
+gsa.apple.com
+ichat.apple.com
+facetime.apple.com
+whatsapp.net
+whatsapp.com
+wa.me
+signal.org
+whispersystems.org
+signal.art
+signal.group
+telegram.org
+t.me
+telegra.ph
+telegram.me
+viber.com
+threema.ch
+wire.com
+element.io
+matrix.org
+session.foundation
+getsession.org
+line.me
+line-apps.com
+kakao.com
+wechat.com
+weixin.qq.com
+mtalk.google.com
+fcm.googleapis.com
+firebaseinstallations.googleapis.com
+notify.windows.com
+wns.windows.com
+sinch.com
+dropbox.com
+dropboxapi.com
+dropbox-dns.com

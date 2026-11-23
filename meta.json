@@ -1,0 +1,46 @@
+{
+  "categories": [
+    {
+      "id": "banking_finance",
+      "name": "Banking and finance",
+      "description": "Major banks, brokerages and card issuers (US, UK, EU, Canada, Australia). Each domain also covers its subdomains.",
+      "default_mode": "no_decrypt"
+    },
+    {
+      "id": "payments",
+      "name": "Payments",
+      "description": "Payment processors, wallets and money transfer services. Each domain also covers its subdomains.",
+      "default_mode": "no_decrypt"
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "description": "Patient portals, health insurers and pharmacies. Each domain also covers its subdomains.",
+      "default_mode": "no_decrypt"
+    },
+    {
+      "id": "government",
+      "name": "Government",
+      "description": "Government and military top-level domains and tax/benefit portals. Patterns starting with *. cover subdomains only.",
+      "default_mode": "no_decrypt"
+    },
+    {
+      "id": "password_managers",
+      "name": "Password managers",
+      "description": "Password managers and authenticators, whose clients often pin certificates. Each domain also covers its subdomains.",
+      "default_mode": "no_decrypt"
+    },
+    {
+      "id": "os_updates",
+      "name": "OS and software updates",
+      "description": "Operating-system and browser update services, which verify certificates themselves. Each domain also covers its subdomains.",
+      "default_mode": "no_decrypt"
+    },
+    {
+      "id": "pinned_apps",
+      "name": "Certificate-pinned apps",
+      "description": "Push and messaging services whose apps reject an intercepting certificate. Each domain also covers its subdomains.",
+      "default_mode": "no_decrypt"
+    }
+  ]
+}

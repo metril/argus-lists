@@ -1,0 +1,53 @@
+# Payments
+# Payment processors, wallets and money transfer services. Each domain also covers its subdomains.
+# One host or *.suffix per line. A bare domain covers the domain and its subdomains;
+# *.suffix covers subdomains only. Lines starting with # are comments.
+
+paypal.com
+paypal.me
+paypalobjects.com
+braintreegateway.com
+braintreepayments.com
+venmo.com
+stripe.com
+stripe.network
+adyen.com
+squareup.com
+square.com
+cash.app
+klarna.com
+affirm.com
+afterpay.com
+wise.com
+transferwise.com
+westernunion.com
+moneygram.com
+remitly.com
+worldremit.com
+payoneer.com
+skrill.com
+neteller.com
+revolut.com
+zellepay.com
+payments.google.com
+pay.google.com
+wallet.google.com
+checkout.com
+worldpay.com
+authorize.net
+2checkout.com
+paddle.com
+gocardless.com
+mollie.com
+sumup.com
+trustly.com
+alipay.com
+wechatpay.com
+paytm.com
+razorpay.com
+mpesa.com
+coinbase.com
+kraken.com
+binance.com
+gemini.com
+bitstamp.net

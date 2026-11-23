@@ -1,0 +1,55 @@
+# Government
+# Government and military top-level domains and tax/benefit portals. Patterns starting with *. cover subdomains only.
+# One host or *.suffix per line. A bare domain covers the domain and its subdomains;
+# *.suffix covers subdomains only. Lines starting with # are comments.
+
+*.gov
+*.mil
+*.gov.uk
+*.gov.au
+*.gc.ca
+*.gov.ie
+*.gov.nz
+*.gov.in
+*.gov.za
+*.gov.sg
+*.gouv.fr
+*.gouv.qc.ca
+*.bund.de
+*.gv.at
+*.admin.ch
+*.overheid.nl
+*.gob.es
+*.gob.mx
+*.gov.br
+*.gov.it
+*.gob.cl
+*.gov.pl
+*.gov.se
+*.gov.no
+*.gov.dk
+*.gov.fi
+*.europa.eu
+irs.gov
+ssa.gov
+usa.gov
+login.gov
+id.me
+idme.com
+gov.uk
+hmrc.gov.uk
+ato.gov.au
+mygov.au
+canada.ca
+servicecanada.gc.ca
+cra-arc.gc.ca
+service-public.fr
+impots.gouv.fr
+elster.de
+digid.nl
+bankid.com
+bankid.no
+mitid.dk
+suomi.fi
+gov.ie
+revenue.ie
