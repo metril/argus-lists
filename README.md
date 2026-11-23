@@ -48,17 +48,35 @@ dropped. `generated/provenance.jsonl` records where each domain came from (not p
 
 ## TLS root store
 
-`roots/roots.json` is the approved Mozilla root set (Websites trust bit, further restricted to the Chrome Root Store) that Argus uses for
-certificate verification and chain display. `generator/rootstore.py` builds it from the CCADB
-"Mozilla included CA certificates" PEM CSV report, cross-checked against NSS `certdata.txt`
-(server-auth trusted delegators); the set is the intersection by SHA-256 and the job fails if the
-sources differ by more than 3 roots. Roots absent from the Chrome Root Store (`root_store.textproto`) are dropped
-(Chrome-only roots are never added); Chrome's `sct_not_after` and `permitted_dns_names` constraints are
-carried per root, and the Google-signed CT log list (verified against a pinned key) is carried as `ct_logs`.
-Anything that loosens trust (an addition, a removed or later date or constraint) goes through the PR. `.github/workflows/roots.yml` runs daily: removals and
-new or earlier `distrust_after` dates are committed to `main`; any addition, or a removed or
-later distrust date, opens/updates the rolling `roots/auto` PR (never auto-merged). After an auto-commit it dispatches `release.yml` itself (a push made with
-`GITHUB_TOKEN` does not trigger workflows; needs `actions: write`). Branch protection on `main` must
-allow `github-actions[bot]` to push. The release
-workflow validates (`scripts/validate_roots.py`) and publishes `roots.json` and `roots.json.minisig`
-next to the lists. Tests: `pip install -r requirements-dev.txt && pytest -n auto tests`.
+`roots/roots.json` is the approved Mozilla root set (Websites trust bit, restricted to the Chrome Root
+Store) that Argus uses for certificate verification and chain display, with Chrome's per-root
+`sct_not_after` / `permitted_dns_names` constraints and the Google-signed CT log list as `ct_logs`
+(RFC 6962 and tiled logs, `"type":"rfc6962"|"static"`; the signature is verified against a pinned key
+when fetched). `generator/rootstore.py` builds it from the CCADB "Mozilla included CA certificates" CSV,
+cross-checked against NSS `certdata.txt`; the job fails if they differ by more than 3 roots. Roots absent
+from the Chrome Root Store are dropped; Chrome-only roots are never added. Unknown Chrome fields fail the
+job rather than being ignored.
+
+`.github/workflows/roots.yml` runs daily in two jobs: a read-only `generate` job (regenerate, validate,
+split) and a `publish` job that only commits files, opens the PR and dispatches workflows.
+
+* Stricter changes (removals, new or earlier `distrust_after`/`sct_not_after`, narrower DNS lists, logs
+  removed or retired) are committed straight to `main` and `release.yml` is dispatched, even while a
+  loosening is waiting.
+* Anything that loosens trust (an addition, a removed or later date, a widened constraint) goes on top of
+  that into the rolling `roots/auto` PR (never auto-merged). The branch is rebuilt on the current `main`
+  every run, left alone when only `serial`/`generated_at` would change, and the PR is closed (branch
+  deleted) when nothing is left to review, so a stale PR cannot reintroduce a removed root.
+* `release.yml` validates (`scripts/validate_roots.py`), refuses a serial that is not greater than the
+  published one, fails on any error fetching the published file other than 404, and refuses a loosening
+  whose head commit is not part of a merged PR into `main`. It publishes `roots.json` and
+  `roots.json.minisig` next to the lists.
+
+Repository settings the workflows rely on: Actions may create pull requests; on `main` require pull
+request review and enable "dismiss stale approvals", and allow `github-actions[bot]` to push (needed for
+the stricter auto-commit; a `GITHUB_TOKEN` push triggers no workflows, hence the explicit dispatches of
+`release.yml` and, on `roots/auto`, `test.yml`).
+
+Dependencies are pinned by hash (`requirements.txt`, `requirements-dev.txt`, compiled from the `.in`
+files with `uv pip compile --universal --generate-hashes`; install with `--require-hashes`) and actions by
+commit SHA. Tests: `pip install --require-hashes -r requirements-dev.txt && pytest -n auto tests`.

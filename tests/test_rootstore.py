@@ -139,19 +139,22 @@ def corpus(n=rs.MIN_ROOTS):
 
 
 LOGKEYS = [ec.generate_private_key(ec.SECP256R1()).public_key().public_bytes(
-    serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo) for _ in range(4)]
+    serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo) for _ in range(5)]
 SIGKEY = rsa.generate_private_key(65537, 2048)
 SIGPEM = SIGKEY.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode()
 
 
-def loglist(states=("usable", "usable", "usable", "retired")):
-    logs = []
-    for k, st in zip(LOGKEYS, states):
-        logs.append({"name": "l", "log_id": base64.b64encode(hashlib.sha256(k).digest()).decode(),
-                     "key": base64.b64encode(k).decode(), "state": {st: {"timestamp": "2026-01-01T00:00:00Z"}},
-                     "temporal_interval": {"start_inclusive": "2026-01-01T00:00:00Z", "end_exclusive": "2027-01-01T00:00:00Z"}})
+def _log(k, st, name="l"):
+    return {"name": name, "log_id": base64.b64encode(hashlib.sha256(k).digest()).decode(),
+            "key": base64.b64encode(k).decode(), "state": {st: {"timestamp": "2026-01-01T00:00:00Z"}},
+            "temporal_interval": {"start_inclusive": "2026-01-01T00:00:00Z", "end_exclusive": "2027-01-01T00:00:00Z"}}
+
+
+def loglist(states=("usable", "usable", "usable", "retired"), tiled=("usable",)):
+    logs = [_log(k, st) for k, st in zip(LOGKEYS, states)]
     logs.append({"name": "p", "log_id": "x", "key": "x", "state": {"pending": {"timestamp": "2026-01-01T00:00:00Z"}}})
-    data = json.dumps({"operators": [{"name": "Op", "logs": logs}]}).encode()
+    tl = [_log(k, st, "t") for k, st in zip(LOGKEYS[4:], tiled)]
+    data = json.dumps({"operators": [{"name": "Op", "logs": logs, "tiled_logs": tl}, {"name": "NoLogs"}]}).encode()
     return data, SIGKEY.sign(data, padding.PKCS1v15(), hashes.SHA256())
 
 
@@ -167,10 +170,11 @@ def test_log_list_signature_and_filters():
     with pytest.raises(rs.RootError, match="signature"):
         rs.verify_log_list(data + b" ", sig, SIGPEM)
     logs = rs.parse_log_list(data)
-    assert len(logs) == 4 and {l["state"] for l in logs} == {"usable", "retired"}  # pending dropped
+    assert len(logs) == 5 and {l["state"] for l in logs} == {"usable", "retired"}  # pending dropped
+    assert sorted(l["type"] for l in logs) == ["rfc6962"] * 4 + ["static"]  # tiled logs included
     assert logs[0]["temporal_interval"] == {"start": "2026-01-01T00:00:00Z", "end": "2027-01-01T00:00:00Z"}
     assert logs[0]["state_since"] == "2026-01-01T00:00:00Z" and logs[0]["operator"] == "Op"
-    few, _ = loglist(("usable", "usable", "retired", "retired"))
+    few, _ = loglist(("usable", "usable", "retired", "retired"), tiled=("retired",))
     with pytest.raises(rs.RootError, match="usable"):
         rs.parse_log_list(few)
 
@@ -189,7 +193,7 @@ def test_generate_deterministic_and_unchanged(tmp_path):
     doc = json.loads(first)
     assert doc["serial"] == 2026112300 and doc["generated_at"] == "2026-11-23T12:00:00Z"
     rs.validate(doc)
-    assert len(doc["ct_logs"]) == 4 and doc["roots"][0]["permitted_dns_names"] == []
+    assert len(doc["ct_logs"]) == 5 and doc["roots"][0]["permitted_dns_names"] == []
 
 
 def test_generate_chrome_floor_and_bad_signature(tmp_path):
@@ -274,7 +278,7 @@ def r(h, dist=None, sct=None, dns=()):
 
 
 def lg(i, state="usable", since="2026-01-01T00:00:00Z", ti=None):
-    return {"log_id": i, "key": "k", "operator": "o", "state": state, "state_since": since, "temporal_interval": ti}
+    return {"log_id": i, "key": "k", "operator": "o", "type": "rfc6962", "state": state, "state_since": since, "temporal_interval": ti}
 
 
 @pytest.mark.parametrize("old,new,status", [
@@ -319,3 +323,148 @@ def test_classify_logs(old, new, status):
 
 def test_classify_old_file_without_logs():
     assert rs.classify({"roots": [r("a")]}, {"roots": [r("a")], "ct_logs": []})[0] == "none"
+
+
+# ---- stricter-only split, serial rebase, approval, Chrome parsing, certdata truncation ----
+
+def D(roots, logs=(), serial=10):
+    return {"schema": 1, "serial": serial, "generated_at": "2026-11-23T12:00:00Z",
+            "sources": {"ccadb_sha256": "a", "certdata_rev": "b"}, "ct_logs": list(logs), "roots": roots}
+
+
+def test_stricter_only_applies_removals_and_dates_but_not_additions():
+    old = D([r("a"), r("b"), r("c", sct="2027-06-01T00:00:00Z", dns=["x.com", "y.com"])], [lg("1"), lg("2")])
+    new = D([r("a", dist="2026-01-01T00:00:00Z"), r("c", sct="2027-01-01T00:00:00Z", dns=["x.com"]), r("d")],
+            [lg("1", "retired"), lg("3")], serial=11)
+    s = rs.stricter_only(old, new, now=NOW)
+    assert [x["sha256"] for x in s["roots"]] == ["a", "c"]  # b removed, d (addition) not added
+    assert s["roots"][0]["distrust_after"] == "2026-01-01T00:00:00Z"
+    assert s["roots"][1]["sct_not_after"] == "2027-01-01T00:00:00Z" and s["roots"][1]["permitted_dns_names"] == ["x.com"]
+    assert [(l["log_id"], l["state"]) for l in s["ct_logs"]] == [("1", "retired")]  # 2 removed, 3 not added
+    assert s["serial"] > old["serial"]
+    assert rs.classify(old, s)[0] == "auto"
+
+
+def test_stricter_only_keeps_loosenings_out():
+    old = D([r("a", dist="2026-01-01T00:00:00Z"), r("b", dns=["x.com"])], [lg("1", "retired")])
+    new = D([r("a"), r("b")], [lg("1", "usable")])
+    assert rs.stricter_only(old, new, now=NOW) is old  # nothing stricter: unchanged
+
+
+def test_urgent_removal_not_blocked_by_pending_addition():
+    old = D([r("a"), r("b")])
+    new = D([r("a"), r("c")], serial=11)  # b removed upstream, c added
+    strict = rs.stricter_only(old, new, now=NOW)
+    assert [x["sha256"] for x in strict["roots"]] == ["a"]
+    assert rs.classify(old, strict)[0] == "auto"
+    review = rs.rebase_serial(strict, new, now=NOW)
+    assert review["serial"] > strict["serial"] and rs.classify(strict, review)[0] == "review"
+    assert [x["sha256"] for x in rs.classify(strict, review)[1]] == ["c"]
+
+
+def test_split_cli(tmp_path):
+    import subprocess
+    d = doc_of(84)
+    old = json.loads(json.dumps(d))
+    new = json.loads(json.dumps(d))
+    new["roots"] = new["roots"][1:]  # one removal (stricter)
+    new["serial"] = 9
+    new["ct_logs"] = [l for l in new["ct_logs"]]
+    (tmp_path / "old.json").write_text(json.dumps(old)); (tmp_path / "new.json").write_text(json.dumps(new))
+    exe = [sys.executable, "-W", "ignore", str(pathlib.Path(rs.__file__)), "split", str(tmp_path / "old.json"),
+           str(tmp_path / "new.json"), "--outdir", str(tmp_path / "out")]
+    out = subprocess.run(exe, capture_output=True, text=True, check=True).stdout.split()
+    assert out == ["stricter=yes", "review=no", "branch_fresh=no"]
+    assert not (tmp_path / "out" / "review.json").exists()
+    st = json.loads((tmp_path / "out" / "stricter.json").read_text())
+    assert len(st["roots"]) == len(old["roots"]) - 1 and st["serial"] > old["serial"]
+    # an extra added root also goes to review, serial above the stricter doc
+    extra = der_of("extra-root")
+    new["roots"] = sorted(new["roots"] + [{"sha256": sha(extra), "subject": "CN=extra-root", "der": base64.b64encode(extra).decode(),
+                                           "distrust_after": None, "sct_not_after": None, "permitted_dns_names": []}],
+                          key=lambda x: x["sha256"])
+    (tmp_path / "new.json").write_text(json.dumps(new))
+    out = subprocess.run(exe, capture_output=True, text=True, check=True).stdout.split()
+    assert out[:2] == ["stricter=yes", "review=yes"]
+    rv = json.loads((tmp_path / "out" / "review.json").read_text())
+    assert rv["serial"] > json.loads((tmp_path / "out" / "stricter.json").read_text())["serial"]
+    assert "extra-root" in (tmp_path / "out" / "body.md").read_text()
+
+
+def test_merged_pr_ok():
+    assert rs.merged_pr_ok([{"merged_at": "2026-01-01T00:00:00Z", "base": {"ref": "main"}}])
+    assert not rs.merged_pr_ok([])
+    assert not rs.merged_pr_ok([{"merged_at": None, "base": {"ref": "main"}}])
+    assert not rs.merged_pr_ok([{"merged_at": "2026-01-01T00:00:00Z", "base": {"ref": "other"}}])
+
+
+def anchor(body, sha="a" * 64):
+    return f'trust_anchors {{\n  sha256_hex: "{sha}"\n  crs_root_id: 1\n{body}}}\n'
+
+
+def test_parse_chrome_unknown_fields_fail():
+    with pytest.raises(rs.RootError, match="unknown trust anchor field"):
+        rs.parse_chrome(anchor("  new_field: 1\n"))
+    with pytest.raises(rs.RootError, match="unknown constraint field"):
+        rs.parse_chrome(anchor("  constraints: {\n    mystery: 1\n  }\n"))
+    with pytest.raises(rs.RootError):
+        rs.parse_chrome(anchor("  constraints: {\n"))  # truncated
+
+
+def test_parse_chrome_one_line_constraints_and_version_blocks():
+    c = rs.parse_chrome(anchor('  constraints { sct_not_after_sec: 1820966399 min_version: "1.0" permitted_dns_names: "a.com" }\n'))
+    assert c["a" * 64] == {"sct_not_after": "2027-09-14T23:59:59Z", "permitted_dns_names": ["a.com"]}
+    paired = anchor('  constraints: { sct_not_after_sec: 1820966399 min_version: "9" }\n  constraints: { max_version_exclusive: "9" }\n')
+    assert rs.parse_chrome(paired)["a" * 64]["sct_not_after"] == "2027-09-14T23:59:59Z"  # still trusted by current Chrome
+
+
+def test_parse_chrome_max_version_only_means_removed():
+    txt = anchor('  constraints: { max_version_exclusive: "9" }\n') + anchor("", "b" * 64)
+    assert set(rs.parse_chrome(txt)) == {"b" * 64}
+
+
+def test_parse_certdata_truncation():
+    a = der_of("a")
+    full = certdata([(a, TD)])
+    with pytest.raises(rs.RootError):
+        rs.parse_certdata(full[: full.index("END") + 10])  # cut inside the first object
+    with pytest.raises(rs.RootError):
+        rs.parse_certdata(full.split("CKA_TRUST_SERVER_AUTH")[0])  # trust object lost its bits
+    with pytest.raises(rs.RootError):
+        rs.parse_certdata("")
+
+
+def test_validate_strict_formats():
+    d = doc_of()
+    for mutate in (lambda x: x.__setitem__("generated_at", "2026-11-23T12:00:00+00:00"),
+                   lambda x: x["roots"][0].__setitem__("permitted_dns_names", ["bad name!"]),
+                   lambda x: x["roots"][0].__setitem__("distrust_after", "2026-11-23"),
+                   lambda x: x["ct_logs"][0].__setitem__("temporal_interval", {"start": "a"}),
+                   lambda x: x["ct_logs"][0].__setitem__("temporal_interval", {"start": "2027-01-01T00:00:00Z", "end": "2026-01-01T00:00:00Z"}),
+                   lambda x: x["ct_logs"][0].__setitem__("type", "weird")):
+        bad = json.loads(json.dumps(d))
+        mutate(bad)
+        with pytest.raises(rs.RootError):
+            rs.validate(bad)
+    ok = json.loads(json.dumps(d)); ok["roots"][0]["permitted_dns_names"] = ["example.com", "*.example.org"]
+    rs.validate(ok)
+
+
+def test_pr_body_sanitised():
+    body = rs.pr_body([{"sha256": "ab" * 32, "subject": "CN=ev`il\x1b[31m|x\nnewline"}])
+    assert "\x1b" not in body and "\nnewline" not in body and "`CN=ev'il[31m/xnewline`" in body
+
+
+def test_workflows_pinned_and_guarded():
+    wf = pathlib.Path(__file__).resolve().parent.parent / ".github" / "workflows"
+    import re
+    for f in wf.glob("*.yml"):
+        for line in f.read_text().splitlines():
+            m = re.search(r"uses:\s*(\S+)", line)
+            if m:
+                assert re.search(r"@[0-9a-f]{40}$", m.group(1)), (f.name, line)
+    roots = (wf / "roots.yml").read_text()
+    assert "gh pr close roots/auto --delete-branch" in roots and "workflow run release.yml" in roots
+    assert "workflow_dispatch" in (wf / "test.yml").read_text()
+    rel = (wf / "release.yml").read_text()
+    assert "--require-approval" in rel and '404)' in rel
