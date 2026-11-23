@@ -1,0 +1,67 @@
+# Generator configuration. Everything here is a data decision; code lives in generate.py.
+
+[output]
+# Category priority: a domain found in several categories is kept only in the first one listed.
+category_order = ["password_managers", "payments", "banking_finance", "health", "government"]
+# A registrable domain claimed by more than this many distinct entities is a platform/aggregator
+# (e.g. a hosting site or a shared portal), not one organisation: dropped and logged.
+max_entities_per_domain = 100
+
+[guard]
+# Fail the run if a category's generated list shrinks by more than this fraction ...
+max_shrink = 0.20
+# ... or grows by more than this factor, versus the previous run (override: --allow-size-change).
+max_growth_factor = 5.0
+
+[dns]
+enabled = true
+cache_ttl_days = 30
+max_seconds = 600     # total run-time cap for the optional DNS check; unchecked names are kept
+workers = 64
+
+# ---------------------------------------------------------------------------------------------
+# Wikidata (CC0). Official website (P856) of items that are instances/subclasses (P31/P279*) of the
+# classes below. Ids were looked up with wbsearchentities and confirmed by label/description.
+# Class values are a label, or { label, direct = instances only (no P279* closure), exclude = [Q-ids to MINUS] }.
+# Entities with a dissolved date (P576) are skipped. Results are paged with ORDER BY ?item LIMIT/OFFSET.
+# ---------------------------------------------------------------------------------------------
+[wikidata]
+endpoint = "https://query.wikidata.org/sparql"
+page_size = 5000
+
+[wikidata.classes.banking_finance]
+Q22687   = "bank"                 # financial institution that accepts deposits
+Q745877  = "credit union"         # member-owned financial cooperative
+Q66344   = "central bank"
+Q11691   = "stock exchange"
+Q2073644 = "brokerage firm"       # facilitates buying/selling of securities
+Q2143354 = "insurance company"
+
+[wikidata.classes.payments]
+Q986008  = { label = "payment system", exclude = ["Q13479982"] }   # minus cryptocurrencies (coin project sites, not payment services)
+Q1956140 = "payment service provider"
+
+[wikidata.classes.health]
+Q16917   = "hospital"
+Q334911  = "health insurance"
+Q20035455 = "health maintenance organization"   # US HMO
+
+[wikidata.classes.government]
+Q327333  = { label = "government agency", direct = true }   # instances only: the subclass closure pulls in municipalities, schools, fire brigades, museums and embassies (~80k sites)
+Q192350  = "ministry"
+Q573607  = "revenue service"      # tax authority
+
+[wikidata.classes.password_managers]
+Q1281199 = "password manager"
+
+# ---------------------------------------------------------------------------------------------
+# Other sources
+# ---------------------------------------------------------------------------------------------
+[fdic]   # FDIC BankFind (public domain): WEBADDR of active institutions -> banking_finance
+url = "https://banks.data.fdic.gov/api/institutions"
+category = "banking_finance"
+
+[cisa]   # CISA dotgov-data (public domain) -> government. Only kept where *.gov-style manual
+         # wildcards do not already cover the domain (in practice: nothing).
+url = "https://raw.githubusercontent.com/cisagov/dotgov-data/main/current-full.csv"
+category = "government"
