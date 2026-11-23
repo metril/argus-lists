@@ -36,7 +36,6 @@ usa.gov
 login.gov
 id.me
 idme.com
-gov.uk
 hmrc.gov.uk
 ato.gov.au
 mygov.au
@@ -51,5 +50,4 @@ bankid.com
 bankid.no
 mitid.dk
 suomi.fi
-gov.ie
 revenue.ie

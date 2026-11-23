@@ -3192,7 +3192,6 @@ gov.mb.ca
 gov.nt.ca
 gov.nu.ca
 gov.pl.so
-gov.scot
 gov.si
 gov.sr
 gov.sz
@@ -5406,7 +5405,6 @@ mil.am
 mil.be
 mil.brandenburg.de
 mil.gov.kg
-mil.ru
 milanomet.it
 militaernaegter.dk
 milk.org
@@ -7853,7 +7851,6 @@ railways.gov.pk
 rak.ba
 ramahnavajo.online
 ras.gov.rs
-ras.ru
 ratel.rs
 rathaus.rostock.de
 raumberg-gumpenstein.at

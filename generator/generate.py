@@ -76,6 +76,7 @@ def main():
     cfg = tomllib.loads((GEN / "config.toml").read_text())
     log = sources.log
     psl = PSL(GEN / "data" / "public_suffix_list.dat")
+    full_psl = PSL(GEN / "data" / "public_suffix_list.dat", private=True)  # Argus rejects any PSL suffix
     deny = set(read_list(GEN / "deny.txt"))
     order = cfg["output"]["category_order"]
     lists = ROOT / "lists"
@@ -120,6 +121,9 @@ def main():
     cand = []
     for cat, h, reg, src, ent in parsed:
         d = reg if reg in apex else h
+        if full_psl.is_suffix(d):
+            stats["public suffix (incl. private)"] += 1
+            continue
         if denied(d) or denied(reg):
             stats["deny.txt"] += 1
             continue

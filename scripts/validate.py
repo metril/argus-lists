@@ -4,9 +4,12 @@ import json, re, socket, sys, pathlib
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-LABEL = re.compile(r"^[a-z0-9_]([a-z0-9_-]{0,61}[a-z0-9_])?$")
-# Second-level registries that behave like public suffixes (co.uk, com.au, gov.uk ...).
-REGISTRY = {"co", "com", "org", "net", "gov", "gouv", "gv", "gob", "edu", "ac", "or", "ne", "mil"}
+sys.path.insert(0, str(ROOT / "generator"))
+from common import PSL, LABEL  # noqa: E402  (ASCII/punycode hostname labels)
+
+# Argus skips single-label names, anything that is itself a public suffix (full PSL, private section
+# included) and non-ASCII/punycode names; scripts/allowed-wildcards.txt exempts listed *.suffix lines.
+FULL_PSL = PSL(ROOT / "generator" / "data" / "public_suffix_list.dat", private=True)
 ALLOW = {l.strip() for l in (ROOT / "scripts" / "allowed-wildcards.txt").read_text().splitlines()
          if l.strip() and not l.startswith("#")}
 errors, warnings = [], []
@@ -14,13 +17,6 @@ errors, warnings = [], []
 
 def valid_host(h):
     return 0 < len(h) <= 253 and all(LABEL.match(l) for l in h.split("."))
-
-
-def public_suffix_like(suffix):
-    labels = suffix.split(".")
-    if len(labels) == 1:
-        return True
-    return len(labels) == 2 and labels[0] in REGISTRY and len(labels[1]) == 2
 
 
 def check_list(path, allow_empty=False):
@@ -39,14 +35,14 @@ def check_list(path, allow_empty=False):
             if not valid_host(suffix):
                 errors.append(f"{where}: invalid wildcard {line!r}")
                 continue
-            if public_suffix_like(suffix) and line not in ALLOW:
+            if FULL_PSL.is_suffix(suffix) and line not in ALLOW:
                 errors.append(f"{where}: {line!r} is a bare TLD / public-suffix wildcard "
                               f"(add it to scripts/allowed-wildcards.txt if intended)")
         elif not valid_host(line):
             errors.append(f"{where}: invalid host {line!r}")
             continue
-        elif "." not in line:
-            errors.append(f"{where}: {line!r} is a bare TLD")
+        elif FULL_PSL.is_suffix(line):
+            errors.append(f"{where}: {line!r} is a single label or public suffix (Argus skips it)")
             continue
         if line in seen:
             errors.append(f"{where}: duplicate of line {seen[line]}")
