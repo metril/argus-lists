@@ -45,3 +45,20 @@ Argus never installs a list older than the one it already has.
 `lists/<category>/generated.txt` from Wikidata, FDIC BankFind and CISA dotgov-data; see
 `SOURCES.md` for licences and `generator/config.toml` / `generator/deny.txt` for what is pulled and
 dropped. `generated/provenance.jsonl` records where each domain came from (not published).
+
+## TLS root store
+
+`roots/roots.json` is the approved Mozilla root set (Websites trust bit, further restricted to the Chrome Root Store) that Argus uses for
+certificate verification and chain display. `generator/rootstore.py` builds it from the CCADB
+"Mozilla included CA certificates" PEM CSV report, cross-checked against NSS `certdata.txt`
+(server-auth trusted delegators); the set is the intersection by SHA-256 and the job fails if the
+sources differ by more than 3 roots. Roots absent from the Chrome Root Store (`root_store.textproto`) are dropped
+(Chrome-only roots are never added); Chrome's `sct_not_after` and `permitted_dns_names` constraints are
+carried per root, and the Google-signed CT log list (verified against a pinned key) is carried as `ct_logs`.
+Anything that loosens trust (an addition, a removed or later date or constraint) goes through the PR. `.github/workflows/roots.yml` runs daily: removals and
+new or earlier `distrust_after` dates are committed to `main`; any addition, or a removed or
+later distrust date, opens/updates the rolling `roots/auto` PR (never auto-merged). After an auto-commit it dispatches `release.yml` itself (a push made with
+`GITHUB_TOKEN` does not trigger workflows; needs `actions: write`). Branch protection on `main` must
+allow `github-actions[bot]` to push. The release
+workflow validates (`scripts/validate_roots.py`) and publishes `roots.json` and `roots.json.minisig`
+next to the lists. Tests: `pip install -r requirements-dev.txt && pytest -n auto tests`.

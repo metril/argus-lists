@@ -10,6 +10,10 @@ names) are extracted. `generated/provenance.jsonl` records the source and entity
 | [FDIC BankFind Suite API](https://banks.data.fdic.gov/docs/) (`WEBADDR` of active institutions) | banking_finance | US government work, public domain | Not required; credited here: "Source: FDIC". |
 | [CISA dotgov-data](https://github.com/cisagov/dotgov-data) `current-full.csv` | government | US government work, public domain (CC0 dedication in the repository) | Not required. Every row is a `.gov` name already covered by the manual `*.gov` wildcard, so it currently adds nothing. |
 | [Public Suffix List](https://publicsuffix.org/list/) (vendored, `generator/data/public_suffix_list.dat`, version 2026-11-21, commit 87a2c1b) | reducing URLs to registrable domains | MPL 2.0 (the data file is kept unmodified, with its notice) | Mozilla Foundation and contributors. |
+| [CCADB Mozilla included roots](https://ccadb.my.salesforce-sites.com/mozilla/IncludedCACertificateReportPEMCSV) | `roots/roots.json` (Websites trust bit, distrust-after dates) | CCADB public data (as used by rustls/webpki-roots) | Common CA Database. |
+| [NSS certdata.txt](https://github.com/mozilla-firefox/firefox/blob/main/security/nss/lib/ckfw/builtins/certdata.txt) (mozilla-central, now git; `hg.mozilla.org` no longer serves it) | cross-check of server-auth trust | MPL 2.0 (facts only; no file is redistributed) | Mozilla Foundation. |
+| [Chrome Root Store](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/root_store.textproto) | restricts `roots/roots.json`; SCT and DNS constraints | BSD-3-Clause (Chromium; facts only) | The Chromium Authors. |
+| [CT log list v3](https://www.gstatic.com/ct/log_list/v3/log_list.json) (signature checked against Google's published `log_list_pubkey.pem`, pinned) | `ct_logs` | CC-BY 4.0-style public data (facts only) | Google. |
 
 ## Not used
 

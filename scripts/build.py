@@ -39,4 +39,7 @@ meta["allowed_wildcards"] = [l.strip() for l in (ROOT / "scripts" / "allowed-wil
                              if l.strip() and not l.startswith("#")]
 meta["version"] = version
 (dist / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+roots = ROOT / "roots" / "roots.json"
+if roots.exists():
+    shutil.copy(roots, dist / "roots.json")
 print(f"built {version}: {len(meta['categories'])} lists")

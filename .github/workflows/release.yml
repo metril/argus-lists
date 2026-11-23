@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches: [main]
-    paths: ["lists/**", "meta.json", "scripts/**", ".github/workflows/release.yml"]
+    paths: ["lists/**", "roots/**", "meta.json", "scripts/**", ".github/workflows/release.yml"]
   workflow_dispatch:
 
 permissions:
@@ -19,6 +19,12 @@ jobs:
           python-version: "3.12"
       - name: Validate lists
         run: python scripts/validate.py
+      - name: Validate the root store
+        run: |
+          pip install -q cryptography
+          curl -fsSL -o "$RUNNER_TEMP/prev-roots.json" \
+            "https://github.com/${{ github.repository }}/releases/latest/download/roots.json" || rm -f "$RUNNER_TEMP/prev-roots.json"
+          python scripts/validate_roots.py --previous "$RUNNER_TEMP/prev-roots.json"
 
   release:
     needs: validate
