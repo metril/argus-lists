@@ -6,7 +6,7 @@ compiled-in public key before using it.
 
 ## Layout
 
-* `lists/<category>.txt` — one host or `*.suffix` per line; `#` starts a comment. A bare domain
+* `lists/<category>/manual.txt` (hand-curated) and `generated.txt` (machine-written by `generator/`) -- `build.py` merges them into the published `<category>.txt`. One host or `*.suffix` per line;
   covers the domain and its subdomains; `*.suffix` covers subdomains only.
 * `meta.json` — `id`, `name`, `description` and `default_mode` (`no_decrypt` or `full`) of each
   category. The release copy also carries `version` and each list's `sha256` and host count.
@@ -38,3 +38,10 @@ gh secret set ARGUS_LISTS_SIGNING_KEY < argus-lists.key
 ```
 
 Argus never installs a list older than the one it already has.
+
+## Generated lists
+
+`generator/generate.py` (weekly via `.github/workflows/generate.yml`, as a pull request) grows
+`lists/<category>/generated.txt` from Wikidata, FDIC BankFind and CISA dotgov-data; see
+`SOURCES.md` for licences and `generator/config.toml` / `generator/deny.txt` for what is pulled and
+dropped. `generated/provenance.jsonl` records where each domain came from (not published).

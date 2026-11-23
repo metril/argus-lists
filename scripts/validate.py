@@ -23,14 +23,14 @@ def public_suffix_like(suffix):
     return len(labels) == 2 and labels[0] in REGISTRY and len(labels[1]) == 2
 
 
-def check_list(path):
+def check_list(path, allow_empty=False):
     seen = {}
     hosts = []
     for n, raw in enumerate(path.read_text().splitlines(), 1):
         line = raw.split("#", 1)[0].strip()
         if not line:
             continue
-        where = f"{path.name}:{n}"
+        where = f"{path.parent.name}/{path.name}:{n}"
         if line != line.lower():
             errors.append(f"{where}: {line!r} must be lowercase")
             continue
@@ -52,8 +52,8 @@ def check_list(path):
             errors.append(f"{where}: duplicate of line {seen[line]}")
         seen[line] = n
         hosts.append(line)
-    if not hosts:
-        errors.append(f"{path.name}: empty list")
+    if not hosts and not allow_empty:
+        errors.append(f"{path.parent.name}/{path.name}: empty list")
     return hosts
 
 
@@ -75,12 +75,29 @@ def main():
                 errors.append(f"meta.json: category {c.get('id')!r} lacks {k}")
         if c.get("default_mode") not in ("no_decrypt", "full"):
             errors.append(f"meta.json: {c['id']}: default_mode must be no_decrypt or full")
-    files = sorted((ROOT / "lists").glob("*.txt"))
-    if sorted(p.stem for p in files) != sorted(ids):
-        errors.append(f"lists/ and meta.json disagree: {[p.stem for p in files]} vs {ids}")
+    dirs = sorted(p for p in (ROOT / "lists").iterdir() if p.is_dir())
+    if sorted(p.name for p in dirs) != sorted(ids):
+        errors.append(f"lists/ and meta.json disagree: {[p.name for p in dirs]} vs {ids}")
+    files = []
     exact = []
-    for p in files:
-        exact += [h for h in check_list(p) if not h.startswith("*.")]
+    for d in dirs:
+        if not (d / "manual.txt").exists():
+            errors.append(f"{d.name}: manual.txt missing")
+        extra = {p.name for p in d.iterdir()} - {"manual.txt", "generated.txt"}
+        if extra:
+            errors.append(f"{d.name}: unexpected files {sorted(extra)}")
+        merged = {}
+        for name in ("manual.txt", "generated.txt"):
+            p = d / name
+            if not p.exists():
+                continue
+            files.append(p)
+            for h in check_list(p, allow_empty=name == "generated.txt"):
+                if h in merged:
+                    errors.append(f"{d.name}/{name}: {h!r} already in {merged[h]}")
+                merged[h] = name
+        # DNS only for hand-curated hosts; generated ones are checked (cached) by the generator.
+        exact += [h for h, n in merged.items() if n == "manual.txt" and not h.startswith("*.")]
     # DNS: warn only (hosts come and go; a dead name is not an error).
     sample = sorted(set(exact))
     with ThreadPoolExecutor(16) as ex:

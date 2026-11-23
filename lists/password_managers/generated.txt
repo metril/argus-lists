@@ -1,0 +1,30 @@
+# Password managers - GENERATED, do not edit (edit lists/password_managers/manual.txt for hand-curated entries).
+# Sources: Wikidata (CC0). See SOURCES.md for licences. Written by generator/generate.py.
+# One host per line; each covers the host and its subdomains.
+billeo.com
+ente.io
+fortnotes.com
+intuitivepassword.com
+keepass.info
+keepassdx.com
+keepassx.org
+keeweb.info
+keymepass.com
+lockwise.firefox.com
+mitro.co
+myki.co
+onecritto.com
+pass-securium.ch
+passbolt.com
+passwarden.com
+passwordstore.org
+passwork.pro
+pleasantsolutions.com
+pwsafe.org
+revelation.olasagasti.info
+securesafe.com
+spideroak.com
+splashid.com
+stickypassword.com
+stickypassword.jp
+vaultkeepr.xyz
