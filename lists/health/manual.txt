@@ -37,7 +37,6 @@ mayoclinic.org
 mountsinai.org
 nyp.org
 hopkinsmedicine.org
-nhs.uk
 nhs.net
 patientaccess.com
 evergreenhealth.com
@@ -64,3 +63,4 @@ telehealth.com
 ancestry.com
 fitbit.com
 withings.com
+*.nhs.uk

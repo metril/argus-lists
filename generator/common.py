@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".cache"
 UA = "argus-lists-generator/1.0 (+https://github.com/metril/argus-lists)"
-LABEL = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
+LABEL = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")  # ASCII/punycode hostname label
 
 
 def http_get(url, data=None, headers=None, retries=4, timeout=120):
@@ -38,13 +38,13 @@ def cached(name, fetch, refresh=False):
 
 
 class PSL:
-    """Registrable domain from the vendored Public Suffix List (ICANN section only; private
-    platform suffixes such as github.io are handled by deny.txt instead)."""
+    """Registrable domain from the vendored Public Suffix List (ICANN section only unless
+    private=True; private platform suffixes such as github.io are handled by deny.txt instead)."""
 
-    def __init__(self, path):
+    def __init__(self, path, private=False):
         self.rules, self.wild, self.exc = set(), set(), set()
         for line in path.read_text(encoding="utf-8").splitlines():
-            if "===END ICANN DOMAINS===" in line:
+            if not private and "===END ICANN DOMAINS===" in line:
                 break
             line = line.strip()
             if not line or line.startswith("//"):
@@ -65,6 +65,10 @@ class PSL:
             if cand in self.rules or ".".join(labels[i + 1:]) in self.wild and i + 1 < n:
                 return n - i
         return 1
+
+    def is_suffix(self, host):
+        """True for a single label or a name that is itself a public suffix (Argus rejects these)."""
+        return self.registrable(host) is None
 
     def registrable(self, host):
         labels = host.split(".")

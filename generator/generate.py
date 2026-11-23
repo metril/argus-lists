@@ -76,6 +76,7 @@ def main():
     cfg = tomllib.loads((GEN / "config.toml").read_text())
     log = sources.log
     psl = PSL(GEN / "data" / "public_suffix_list.dat")
+    full_psl = PSL(GEN / "data" / "public_suffix_list.dat", private=True)  # Argus rejects any PSL suffix
     deny = set(read_list(GEN / "deny.txt"))
     order = cfg["output"]["category_order"]
     lists = ROOT / "lists"
@@ -88,6 +89,11 @@ def main():
         manual_count[p.parent.name] = len(entries)
         for e in entries:
             (m_wild if e.startswith("*.") else m_exact).add(e[2:] if e.startswith("*.") else e)
+
+    # Allowed wildcards (scripts/allowed-wildcards.txt) cover their namespace; never emit a bare suffix
+    # (rejected by the full-PSL check below) that one of them expresses.
+    for l in read_list(ROOT / "scripts" / "allowed-wildcards.txt"):
+        m_wild.add(l[2:])
 
     def covered(d):
         s = suffixes(d)
@@ -120,6 +126,9 @@ def main():
     cand = []
     for cat, h, reg, src, ent in parsed:
         d = reg if reg in apex else h
+        if full_psl.is_suffix(d):
+            stats["public suffix (incl. private)"] += 1
+            continue
         if denied(d) or denied(reg):
             stats["deny.txt"] += 1
             continue

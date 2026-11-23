@@ -35,6 +35,8 @@ for c in meta["categories"]:
     (dist / f"{c['id']}.txt").write_bytes(text)
     c["sha256"] = hashlib.sha256(text).hexdigest()
     c["hosts"] = sum(1 for l in text.decode().splitlines() if l.split("#", 1)[0].strip())
+meta["allowed_wildcards"] = [l.strip() for l in (ROOT / "scripts" / "allowed-wildcards.txt").read_text().splitlines()
+                             if l.strip() and not l.startswith("#")]
 meta["version"] = version
 (dist / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
 print(f"built {version}: {len(meta['categories'])} lists")
