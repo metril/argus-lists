@@ -25,7 +25,7 @@ jobs:
           set +e
           python scripts/validate.py --net | tee "$RUNNER_TEMP/net.log"
           echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
-      - name: Open or update the issue on failures
+      - name: Comment on or open the issue on failures
         if: steps.net.outputs.rc != '0'
         run: |
           title="Catalog check failing"
@@ -37,10 +37,18 @@ jobs:
           n=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number,title \
               -q "[.[] | select(.title == \"$title\")][0].number // empty")
           if [ -n "$n" ]; then
-            gh issue edit "$n" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/body.md"
+            gh issue comment "$n" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/body.md"
           else
             gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$RUNNER_TEMP/body.md"
           fi
+      - name: Close the issue once the check passes
+        if: steps.net.outputs.rc == '0'
+        run: |
+          title="Catalog check failing"
+          for n in $(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number,title \
+              -q ".[] | select(.title == \"$title\") | .number"); do
+            gh issue close "$n" --repo "$GITHUB_REPOSITORY" --comment "Catalog check passes again ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)."
+          done
       - name: Fail the job
         if: steps.net.outputs.rc != '0'
         run: exit 1

@@ -37,11 +37,15 @@ for c in meta["categories"]:
     c["hosts"] = sum(1 for l in text.decode().splitlines() if l.split("#", 1)[0].strip())
 meta["allowed_wildcards"] = [l.strip() for l in (ROOT / "scripts" / "allowed-wildcards.txt").read_text().splitlines()
                              if l.strip() and not l.startswith("#")]
+meta["catalogues"] = []
+for kind in ("filters", "userscripts"):
+    raw = (ROOT / "catalog" / f"{kind}.json").read_bytes()
+    (dist / f"{kind}.json").write_bytes(raw)
+    meta["catalogues"].append({"kind": kind, "file": f"{kind}.json", "sha256": hashlib.sha256(raw).hexdigest(),
+                               "entries": len(json.loads(raw)["entries"])})
 meta["version"] = version
 (dist / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
 roots = ROOT / "roots" / "roots.json"
 if roots.exists():
     shutil.copy(roots, dist / "roots.json")
-for c in sorted((ROOT / "catalog").glob("*.json")):
-    shutil.copy(c, dist / c.name)
 print(f"built {version}: {len(meta['categories'])} lists")

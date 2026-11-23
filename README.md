@@ -36,7 +36,15 @@ description,install_url,homepage,sites,category,licence,needs_gm,connect}]}`, `n
 plus `.minisig`). They only point at third-party lists and scripts; nothing is mirrored. `scripts/validate.py` checks
 schema, unique ids, https, formats, categories and `.user.js` URLs; `validate.py --net` fetches every URL, checks
 userscript headers (`@name`, `@updateURL`/`@downloadURL`) and flags entries not modified for 2 years.
-`.github/workflows/catalog-check.yml` runs it weekly and opens or updates a "Catalog check failing" issue.
+`.github/workflows/catalog-check.yml` runs it weekly, comments on (or opens) a "Catalog check failing" issue on failures and closes it when the check passes again.
+Each catalogue carries a top-level `kind` that must match its filename, and `meta.json` (signed) lists both with their
+`sha256` and entry count under `catalogues`, so a catalogue cannot be swapped for another or rolled back unnoticed.
+`licence` is an SPDX id or expression (free text goes in `licence_note`); `noncommercial: true` marks lists whose terms
+restrict commercial use. Userscript entries carry `requires` (the `@require` URLs).
+
+The signed userscript catalogue attests to curation and the install URL, not to the code: authors can change a script
+at any time. Argus shows each script's grants, `connect` hosts and `require` URLs in the install plan and holds
+updates that widen that scope for approval.
 
 ## Signing key
 

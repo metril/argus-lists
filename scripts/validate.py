@@ -68,7 +68,8 @@ def resolves(host):
 
 def main_net():
     docs, errs = catalog.load()
-    errs += catalog.check_net(docs)
+    if not errs:
+        errs = catalog.check_net(docs)
     for e in errs:
         print(f"::error::{e}")
     print(f"{sum(len(d.get('entries', [])) for d in docs.values())} catalog entries checked, {len(errs)} errors")

@@ -13,6 +13,9 @@ ID = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 STALE_DAYS = 730
 MAX_READ = 256 * 1024
 UA = "argus-lists-validator"
+FILES = ("filters", "userscripts")
+HOST = re.compile(r"^(\*|(\*\.)?[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*(\.\*)?)$")
+SPDX = re.compile(r"^[A-Za-z0-9.+-]+( (OR|AND|WITH) [A-Za-z0-9.+-]+)*$")
 
 
 def _str(e, k, errs, where, optional=False):
@@ -34,6 +37,8 @@ def check_doc(doc, kind):
     errs = []
     if not isinstance(doc, dict) or doc.get("schema") != 1 or not isinstance(doc.get("entries"), list):
         return [f"{kind}: must be an object with schema=1 and an entries list"]
+    if doc.get("kind") != kind:
+        return [f"{kind}: top-level kind must be {kind!r} (got {doc.get('kind')!r})"]
     seen = set()
     for i, e in enumerate(doc["entries"]):
         where = f"{kind}[{i}]"
@@ -54,6 +59,11 @@ def check_doc(doc, kind):
             _https(e, "url", errs, where)
             _str(e, "licence", errs, where)
             _str(e, "region", errs, where, optional=True)
+            _str(e, "licence_note", errs, where, optional=True)
+            if "noncommercial" in e and not isinstance(e["noncommercial"], bool):
+                errs.append(f"{where}: noncommercial must be a boolean")
+            if isinstance(e.get("licence"), str) and not SPDX.match(e["licence"]):
+                errs.append(f"{where}: licence must be an SPDX id or expression (use licence_note for free text)")
             if e.get("format") not in FORMATS:
                 errs.append(f"{where}: format must be one of {sorted(FORMATS)}")
             if e.get("category") not in FILTER_CATEGORIES:
@@ -71,10 +81,20 @@ def check_doc(doc, kind):
                 errs.append(f"{where}: unknown category {e.get('category')!r}")
             if e.get("needs_gm") not in GM:
                 errs.append(f"{where}: needs_gm must be one of {sorted(GM)}")
+            if isinstance(e.get("licence"), str) and not SPDX.match(e["licence"]):
+                errs.append(f"{where}: licence must be an SPDX id or expression")
             for k in ("sites", "connect"):
                 v = e.get(k)
                 if not isinstance(v, list) or not all(isinstance(s, str) and s for s in v):
                     errs.append(f"{where}: {k} must be a list of strings")
+                else:
+                    errs += [f"{where}: {k} entry {s!r} is not a host, *.host or *" for s in v
+                             if not HOST.match(s) and not (k == "connect" and s == "self")]
+            r = e.get("requires")
+            if not isinstance(r, list) or not all(isinstance(s, str) and s.startswith("https://") for s in r):
+                errs.append(f"{where}: requires must be a list of https URLs")
+            if e.get("needs_gm") == "xhr" and not e.get("connect"):
+                errs.append(f"{where}: needs_gm xhr requires a non-empty connect list")
             if not e.get("sites"):
                 errs.append(f"{where}: sites must not be empty")
     return errs
@@ -82,7 +102,7 @@ def check_doc(doc, kind):
 
 def load(root=ROOT):
     errs, docs = [], {}
-    for kind in ("filters", "userscripts"):
+    for kind in FILES:
         p = pathlib.Path(root) / "catalog" / f"{kind}.json"
         try:
             docs[kind] = json.loads(p.read_text())
@@ -113,6 +133,8 @@ def stale(headers, now):
         t = email.utils.parsedate_to_datetime(lm)
     except (TypeError, ValueError):
         return False
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=dt.timezone.utc)
     return (now - t).days > STALE_DAYS
 
 
@@ -124,13 +146,14 @@ def check_entry_net(kind, e, fetcher, now):
         return [f"{where}: {url} returned {status or 'a network error'}"]
     errs = []
     if kind == "userscripts":
-        head = body[: body.find("==/UserScript==")] if "==/UserScript==" in body else ""
-        if "==UserScript==" not in head and "==UserScript==" not in body:
+        m = re.search(r"==UserScript==(.*?)==/UserScript==", body, re.S)
+        if not m:
             errs.append(f"{where}: no userscript metadata block")
         else:
-            if not re.search(r"^//\s*@name\s+\S", body, re.M):
+            meta = m.group(1)
+            if not re.search(r"^//\s*@name\s+\S", meta, re.M):
                 errs.append(f"{where}: header lacks @name")
-            if not re.search(r"^//\s*@(updateURL|downloadURL)\s+\S", body, re.M):
+            if not re.search(r"^//\s*@(updateURL|downloadURL)\s+\S", meta, re.M):
                 errs.append(f"{where}: header lacks @updateURL/@downloadURL")
     elif not body.strip() or re.match(r"\s*<(!doctype|html)", body, re.I):
         errs.append(f"{where}: {url} does not serve a list")
@@ -141,7 +164,7 @@ def check_entry_net(kind, e, fetcher, now):
 
 def check_net(docs, fetcher=fetch, now=None, workers=8):
     now = now or dt.datetime.now(dt.timezone.utc)
-    jobs = [(k, e) for k in ("filters", "userscripts") for e in docs.get(k, {}).get("entries", [])]
+    jobs = [(k, e) for k in FILES for e in docs.get(k, {}).get("entries", [])]
     with ThreadPoolExecutor(workers) as ex:
         results = ex.map(lambda j: check_entry_net(j[0], j[1], fetcher, now), jobs)
     return [m for r in results for m in r]

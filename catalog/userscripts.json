@@ -1,5 +1,6 @@
 {
   "schema": 1,
+  "kind": "userscripts",
   "entries": [
     {
       "id": "gf-584347",
@@ -13,7 +14,8 @@
       "category": "ads",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-534344",
@@ -27,7 +29,8 @@
       "category": "ads",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-550006",
@@ -42,7 +45,8 @@
       "category": "ads",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-431691",
@@ -56,7 +60,12 @@
       "category": "shortlinks",
       "licence": null,
       "needs_gm": "xhr",
-      "connect": []
+      "connect": [
+        "*"
+      ],
+      "requires": [
+        "https://update.greasyfork.org/scripts/528923/1588272/MonkeyConfig%20Mod.js"
+      ]
     },
     {
       "id": "gf-523522",
@@ -70,7 +79,8 @@
       "category": "link-cleaning",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-591392",
@@ -87,7 +97,8 @@
       "connect": [
         "self",
         "google.*"
-      ]
+      ],
+      "requires": []
     },
     {
       "id": "gf-542922",
@@ -101,7 +112,8 @@
       "category": "link-cleaning",
       "licence": "MIT",
       "needs_gm": "basic",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-409925",
@@ -115,7 +127,8 @@
       "category": "link-cleaning",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-432387",
@@ -136,7 +149,8 @@
       "category": "link-cleaning",
       "licence": "GPL-3.0-or-later",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-404632",
@@ -150,9 +164,13 @@
         "x.com"
       ],
       "category": "link-cleaning",
-      "licence": "GPL",
+      "licence": "LicenseRef-GPL-unspecified",
       "needs_gm": "basic",
-      "connect": []
+      "connect": [],
+      "requires": [
+        "https://unpkg.com/gm-compat@1.1.0/dist/index.iife.min.js"
+      ],
+      "licence_note": "Upstream header says only \"GPL\""
     },
     {
       "id": "gf-548145",
@@ -163,10 +181,15 @@
       "sites": [
         "*.facebook.com"
       ],
-      "category": "link-cleaning",
+      "category": "social",
       "licence": "MIT",
       "needs_gm": "xhr",
-      "connect": []
+      "connect": [
+        "*"
+      ],
+      "requires": [
+        "https://cdn.jsdelivr.net/npm/@zumer/snapdom@2.12.2/dist/snapdom.js#sha256=5fe8acfa7aeeb3c02d7f850836b3b228de5b9ada6165951b24813987e8e692b3"
+      ]
     },
     {
       "id": "gf-578586",
@@ -180,7 +203,8 @@
       "category": "google-ai-overview",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-540134",
@@ -194,7 +218,8 @@
       "category": "google-ai-overview",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-559629",
@@ -206,9 +231,10 @@
         "www.google.com"
       ],
       "category": "google-ai-overview",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-436115",
@@ -222,7 +248,8 @@
       "category": "youtube",
       "licence": null,
       "needs_gm": "basic",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-453320",
@@ -234,7 +261,7 @@
         "*.youtube.com",
         "youtu.be",
         "odysee.com",
-        "invidious instances"
+        "yewtu.be"
       ],
       "category": "youtube",
       "licence": "AGPL-3.0-or-later",
@@ -242,6 +269,9 @@
       "connect": [
         "sponsor.ajay.app",
         "*"
+      ],
+      "requires": [
+        "https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"
       ]
     },
     {
@@ -262,7 +292,8 @@
       "connect": [
         "sponsor.ajay.app",
         "bsbsb.top"
-      ]
+      ],
+      "requires": []
     },
     {
       "id": "gf-546668",
@@ -276,7 +307,8 @@
       "category": "youtube",
       "licence": "MIT",
       "needs_gm": "basic",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-540106",
@@ -290,7 +322,8 @@
       "category": "youtube",
       "licence": null,
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-481929",
@@ -302,9 +335,13 @@
         "www.youtube.com"
       ],
       "category": "youtube",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": [
+        "https://cdn.jsdelivr.net/gh/cyfung1031/userscript-supports@8fac46500c5a916e6ed21149f6c25f8d1c56a6a3/library/ytZara.js",
+        "https://cdn.jsdelivr.net/gh/cyfung1031/userscript-supports@c2b707e4977f77792042d4a5015fb188aae4772e/library/nextBrowserTick.min.js"
+      ]
     },
     {
       "id": "gf-550443",
@@ -318,7 +355,8 @@
       "category": "youtube",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-575941",
@@ -333,7 +371,8 @@
       "category": "youtube",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-554221",
@@ -347,7 +386,8 @@
       "category": "youtube",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-545419",
@@ -362,7 +402,8 @@
       "category": "social",
       "licence": "MIT",
       "needs_gm": "basic",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-382572",
@@ -376,7 +417,8 @@
       "category": "social",
       "licence": null,
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-546618",
@@ -390,7 +432,8 @@
       "category": "social",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-550390",
@@ -404,7 +447,8 @@
       "category": "github",
       "licence": "GPL-3.0-or-later",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-532704",
@@ -420,7 +464,8 @@
       "needs_gm": "xhr",
       "connect": [
         "api.github.com"
-      ]
+      ],
+      "requires": []
     },
     {
       "id": "gf-519050",
@@ -434,7 +479,8 @@
       "category": "cookie-banners",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-575949",
@@ -448,7 +494,8 @@
       "category": "cookie-banners",
       "licence": null,
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     },
     {
       "id": "gf-522645",
@@ -462,7 +509,8 @@
       "category": "cookie-banners",
       "licence": "GPL-3.0-only",
       "needs_gm": "none",
-      "connect": []
+      "connect": [],
+      "requires": []
     }
   ]
 }

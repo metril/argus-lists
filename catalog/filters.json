@@ -1,5 +1,6 @@
 {
   "schema": 1,
+  "kind": "filters",
   "entries": [
     {
       "id": "easylist",
@@ -28,7 +29,7 @@
       "url": "https://ublockorigin.github.io/uAssets/filters/filters.min.txt",
       "format": "ubo",
       "category": "ads",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets"
     },
     {
@@ -38,7 +39,7 @@
       "url": "https://ublockorigin.github.io/uAssets/filters/badware.min.txt",
       "format": "ubo",
       "category": "malware",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets"
     },
     {
@@ -48,7 +49,7 @@
       "url": "https://ublockorigin.github.io/uAssets/filters/privacy.min.txt",
       "format": "ubo",
       "category": "privacy",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets"
     },
     {
@@ -58,7 +59,7 @@
       "url": "https://ublockorigin.github.io/uAssets/filters/annoyances.min.txt",
       "format": "ubo",
       "category": "annoyances",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets"
     },
     {
@@ -68,7 +69,7 @@
       "url": "https://ublockorigin.github.io/uAssets/filters/unbreak.min.txt",
       "format": "ubo",
       "category": "unbreak",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets"
     },
     {
@@ -78,7 +79,7 @@
       "url": "https://ublockorigin.github.io/uAssets/filters/quick-fixes.min.txt",
       "format": "ubo",
       "category": "ads",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets"
     },
     {
@@ -86,9 +87,9 @@
       "name": "AdGuard Base",
       "description": "AdGuard's general ad-blocking filter, without EasyList rules.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/2_without_easylist.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "ads",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
     },
     {
@@ -96,9 +97,9 @@
       "name": "AdGuard Tracking Protection",
       "description": "Blocks trackers and analytics.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/3.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "privacy",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
     },
     {
@@ -106,9 +107,9 @@
       "name": "AdGuard Annoyances",
       "description": "Cookie notices, popups, widgets and other annoyances.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/14.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "annoyances",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
     },
     {
@@ -116,9 +117,9 @@
       "name": "AdGuard Social Media",
       "description": "Hides social media buttons and widgets.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/4.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "social",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
     },
     {
@@ -126,9 +127,9 @@
       "name": "AdGuard Mobile Ads",
       "description": "Ads on mobile-oriented sites.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/11.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "ads",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
     },
     {
@@ -136,9 +137,9 @@
       "name": "AdGuard URL Tracking",
       "description": "Strips tracking parameters from URLs.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/17.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "privacy",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
     },
     {
@@ -168,8 +169,10 @@
       "url": "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&showintro=1&mimetype=plaintext",
       "format": "abp",
       "category": "ads+tracking",
-      "licence": "free for personal use",
-      "homepage": "https://pgl.yoyo.org/adservers/"
+      "licence": "LicenseRef-personal-use-only",
+      "homepage": "https://pgl.yoyo.org/adservers/",
+      "licence_note": "free for personal use",
+      "noncommercial": true
     },
     {
       "id": "easylist-germany",
@@ -211,7 +214,7 @@
       "url": "https://easylist-downloads.adblockplus.org/liste_fr.txt",
       "format": "abp",
       "category": "ads",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://forums.lanik.us/viewforum.php?f=91",
       "region": "fr"
     },
@@ -253,9 +256,9 @@
       "name": "AdGuard Japanese",
       "description": "Ad filters for Japanese sites.",
       "url": "https://filters.adtidy.org/extension/ublock/filters/7.txt",
-      "format": "adguard",
+      "format": "ubo",
       "category": "ads",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
       "region": "ja"
     },
@@ -276,7 +279,7 @@
       "url": "https://adaway.org/hosts.txt",
       "format": "hosts",
       "category": "ads",
-      "licence": "CC BY 3.0",
+      "licence": "CC-BY-3.0",
       "homepage": "https://adaway.org/"
     },
     {
@@ -286,8 +289,10 @@
       "url": "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext",
       "format": "hosts",
       "category": "ads+tracking",
-      "licence": "free for personal use",
-      "homepage": "https://pgl.yoyo.org/adservers/"
+      "licence": "LicenseRef-personal-use-only",
+      "homepage": "https://pgl.yoyo.org/adservers/",
+      "licence_note": "free for personal use",
+      "noncommercial": true
     },
     {
       "id": "blocklistproject-ads",
@@ -306,7 +311,7 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/light-onlydomains.txt",
       "format": "domains",
       "category": "ads+tracking",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/hagezi/dns-blocklists"
     },
     {
@@ -316,7 +321,7 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
       "format": "domains",
       "category": "ads+tracking+malware",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/hagezi/dns-blocklists"
     },
     {
@@ -326,7 +331,7 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif-onlydomains.txt",
       "format": "domains",
       "category": "malware",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://github.com/hagezi/dns-blocklists"
     },
     {
@@ -336,7 +341,7 @@
       "url": "https://small.oisd.nl/domainswild2",
       "format": "domains",
       "category": "ads+tracking+malware",
-      "licence": "GPL-3.0",
+      "licence": "GPL-3.0-only",
       "homepage": "https://oisd.nl/"
     },
     {
@@ -346,8 +351,9 @@
       "url": "https://phishing.army/download/phishing_army_blocklist.txt",
       "format": "domains",
       "category": "phishing",
-      "licence": "CC BY-NC 4.0",
-      "homepage": "https://phishing.army/"
+      "licence": "CC-BY-NC-4.0",
+      "homepage": "https://phishing.army/",
+      "noncommercial": true
     },
     {
       "id": "spamhaus-drop",
@@ -356,8 +362,10 @@
       "url": "https://www.spamhaus.org/drop/drop.txt",
       "format": "ips",
       "category": "malware",
-      "licence": "free for non-commercial use",
-      "homepage": "https://www.spamhaus.org/drop/"
+      "licence": "LicenseRef-non-commercial",
+      "homepage": "https://www.spamhaus.org/drop/",
+      "licence_note": "free for non-commercial use",
+      "noncommercial": true
     },
     {
       "id": "feodo-ips",
@@ -366,7 +374,7 @@
       "url": "https://feodotracker.abuse.ch/downloads/ipblocklist.txt",
       "format": "ips",
       "category": "malware",
-      "licence": "CC0",
+      "licence": "CC0-1.0",
       "homepage": "https://feodotracker.abuse.ch/blocklist/"
     }
   ]
