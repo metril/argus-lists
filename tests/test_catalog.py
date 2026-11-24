@@ -68,6 +68,13 @@ def test_script_errors(mut, frag):
     assert any(frag in m for m in catalog.check_doc(doc(e), "userscripts"))
 
 
+@pytest.mark.parametrize("cat", ["reddit", "wikipedia", "stackexchange", "media", "amp"])
+def test_script_new_categories_allowed(cat):
+    e = copy.deepcopy(SCRIPT)
+    e["category"] = cat
+    assert catalog.check_doc(doc(e), "userscripts") == []
+
+
 def test_duplicate_ids_and_bad_schema():
     assert any("duplicate" in m for m in catalog.check_doc(doc(FILTER, FILTER), "filters"))
     assert catalog.check_doc({"schema": 2, "entries": []}, "filters")
@@ -177,3 +184,36 @@ def test_main_net_rejects_malformed_before_network(tmp_path, monkeypatch):
     with pytest.raises(SystemExit) as ex:
         mod["main_net"]()
     assert ex.value.code == 1 and not called
+
+
+def test_unpinned_urls():
+    for u in ("https://cdn.jsdelivr.net/gh/o/r@dev/a.js", "https://cdn.jsdelivr.net/gh/o/r/a.js",
+              "https://raw.githubusercontent.com/o/r/main/a.js", "https://github.com/o/r/raw/master/a.js",
+              "https://example.com/lib.js"):
+        assert catalog.unpinned(u), u
+    for u in ("https://cdn.jsdelivr.net/npm/x@1.2.3/a.js", "https://cdn.jsdelivr.net/gh/o/r@22af192175b5e1707f49c57de7ce942d4d4ad480/a.js",
+              "https://raw.githubusercontent.com/o/r/22af192/a.js", "https://code.jquery.com/jquery-3.3.1.min.js",
+              "https://update.greasyfork.org/scripts/528923/1588272/M.js"):
+        assert not catalog.unpinned(u), u
+
+
+def test_net_warns_on_unpinned_require():
+    body = HEADER.replace("// ==/UserScript==", "// @require https://cdn.jsdelivr.net/gh/o/r@dev/a.js\n// ==/UserScript==")
+    warns = []
+    st = lambda u: (200, {}, body)
+    assert catalog.check_entry_net("userscripts", dict(SCRIPT), st, NOW, warns) == []
+    assert len(warns) == 1 and "not pinned" in warns[0]
+
+
+def test_github_date_fallback():
+    url = "https://raw.githubusercontent.com/o/r/main/a.user.js"
+    old, new = NOW - dt.timedelta(days=900), NOW - dt.timedelta(days=5)
+    assert catalog.stale({}, NOW, lambda u: old, url)
+    assert not catalog.stale({}, NOW, lambda u: new, url)
+    w = []
+    assert not catalog.stale({}, NOW, lambda u: None, url, w, "x")
+    assert len(w) == 1
+    assert not catalog.stale({}, NOW, lambda u: old, "https://example.com/a.user.js")
+    e = dict(SCRIPT, install_url=url)
+    errs = catalog.check_entry_net("userscripts", e, lambda u: (200, {}, HEADER), NOW, [], lambda u: old)
+    assert any("stale" in m for m in errs)

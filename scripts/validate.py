@@ -67,9 +67,12 @@ def resolves(host):
 
 
 def main_net():
+    warns = []
     docs, errs = catalog.load()
     if not errs:
-        errs = catalog.check_net(docs)
+        errs = catalog.check_net(docs, warns=warns)
+    for w in warns:
+        print(f"::warning::{w}")
     for e in errs:
         print(f"::error::{e}")
     print(f"{sum(len(d.get('entries', [])) for d in docs.values())} catalog entries checked, {len(errs)} errors")

@@ -511,6 +511,162 @@
       "needs_gm": "none",
       "connect": [],
       "requires": []
+    },
+    {
+      "id": "gf-479271",
+      "name": "Old Reddit Redirect",
+      "description": "Redirects reddit.com pages to old.reddit.com, leaving /s/ share links untouched.",
+      "install_url": "https://update.greasyfork.org/scripts/479271/Old%20Reddit%20Redirect.user.js",
+      "homepage": "https://greasyfork.org/scripts/479271",
+      "sites": [
+        "*.reddit.com"
+      ],
+      "category": "reddit",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gh-adguard-disable-amp",
+      "name": "Disable AMP",
+      "description": "Opens AMP and Yandex Turbo pages as their original non-AMP versions and cleans Google/Google News result links.",
+      "install_url": "https://userscripts.adtidy.org/release/disable-amp/1.0/disable-amp.user.js",
+      "homepage": "https://github.com/AdguardTeam/DisableAMP",
+      "sites": [
+        "*"
+      ],
+      "category": "amp",
+      "licence": "LGPL-3.0-only",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-27332",
+      "name": "SE Preview on hover",
+      "description": "Shows a preview of linked Stack Exchange questions and answers when hovering over a link.",
+      "install_url": "https://update.greasyfork.org/scripts/27332/SE%20Preview%20on%20hover.user.js",
+      "homepage": "https://greasyfork.org/scripts/27332",
+      "sites": [
+        "*.stackoverflow.com",
+        "*.superuser.com",
+        "*.serverfault.com",
+        "*.askubuntu.com",
+        "*.stackapps.com",
+        "*.mathoverflow.net",
+        "*.stackexchange.com",
+        "www.google.*",
+        "google.*",
+        "*.google.*",
+        "*.bing.com",
+        "*.yahoo.com",
+        "*.yahoo.*"
+      ],
+      "category": "stackexchange",
+      "licence": "MIT",
+      "needs_gm": "xhr",
+      "connect": [
+        "stackoverflow.com",
+        "superuser.com",
+        "serverfault.com",
+        "askubuntu.com",
+        "stackapps.com",
+        "mathoverflow.net",
+        "stackexchange.com",
+        "sstatic.net",
+        "gravatar.com",
+        "imgur.com",
+        "self"
+      ],
+      "requires": [
+        "https://cdn.jsdelivr.net/gh/openstyles/lz-string-unsafe@22af192175b5e1707f49c57de7ce942d4d4ad480/lz-string-unsafe.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/highlight.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/autohotkey.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/autoit.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/dart.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/delphi.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/haskell.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/moonscript.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/nsis.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/powershell.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/r.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/vbnet.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/vbscript-html.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/vbscript.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/x86asm.min.js"
+      ]
+    },
+    {
+      "id": "gh-fznhq-so-dark",
+      "name": "Dark Theme Stackoverflow",
+      "description": "Applies the Stack Overflow dark theme without being logged in.",
+      "install_url": "https://raw.githubusercontent.com/fznhq/userscript-collection/main/Dark_Theme_Stackoverflow.user.js",
+      "homepage": "https://github.com/fznhq/userscript-collection",
+      "sites": [
+        "*.stackoverflow.com"
+      ],
+      "category": "stackexchange",
+      "licence": "GPL-3.0-only",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-554008",
+      "name": "Wikipedia Dark Theme Automatic",
+      "description": "Enables Wikipedia's built-in dark mode for the Vector and Minerva skins.",
+      "install_url": "https://update.greasyfork.org/scripts/554008/Wikipedia%20Dark%20Theme%20Automatic.user.js",
+      "homepage": "https://greasyfork.org/scripts/554008",
+      "sites": [
+        "*.wikipedia.org"
+      ],
+      "category": "wikipedia",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-458789",
+      "name": "Vector Layout for Wikipedia (Fast)",
+      "description": "Restores the classic Vector layout on Wikipedia and sister Wikimedia sites.",
+      "install_url": "https://update.greasyfork.org/scripts/458789/Vector%20Layout%20for%20Wikipedia%20%28Fast%29.user.js",
+      "homepage": "https://greasyfork.org/scripts/458789",
+      "sites": [
+        "*.wikipedia.org",
+        "*.wiktionary.org",
+        "*.wikinews.org",
+        "*.wikivoyage.org",
+        "*.wikiquote.org",
+        "*.wikiversity.org",
+        "*.wikibooks.org",
+        "*.wikifunctions.org",
+        "*.wikidata.org",
+        "*.wikisource.org",
+        "*.wikimedia.org",
+        "mediawiki.org"
+      ],
+      "category": "wikipedia",
+      "licence": "GPL-3.0-or-later",
+      "needs_gm": "basic",
+      "connect": [],
+      "requires": []
+    },
+    {
+      "id": "gf-560197",
+      "name": "Video Autoplay Blocker",
+      "description": "Blocks audio and video autoplay and allows playback after a user action.",
+      "install_url": "https://update.greasyfork.org/scripts/560197/Video%20Autoplay%20Blocker.user.js",
+      "homepage": "https://greasyfork.org/scripts/560197",
+      "sites": [
+        "*"
+      ],
+      "category": "media",
+      "licence": "MIT",
+      "needs_gm": "none",
+      "connect": [],
+      "requires": []
     }
   ]
 }
