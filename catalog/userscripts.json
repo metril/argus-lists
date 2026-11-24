@@ -515,7 +515,7 @@
     {
       "id": "gf-479271",
       "name": "Old Reddit Redirect",
-      "description": "Redirects reddit.com pages to old.reddit.com and resolves /s/ share links.",
+      "description": "Redirects reddit.com pages to old.reddit.com, leaving /s/ share links untouched.",
       "install_url": "https://update.greasyfork.org/scripts/479271/Old%20Reddit%20Redirect.user.js",
       "homepage": "https://greasyfork.org/scripts/479271",
       "sites": [
@@ -528,24 +528,9 @@
       "requires": []
     },
     {
-      "id": "gf-451825",
-      "name": "Redirect Reddit www to old",
-      "description": "Redirects www.reddit.com pages to the matching old.reddit.com page.",
-      "install_url": "https://update.greasyfork.org/scripts/451825/Redirect%20Reddit%20www%20to%20old.user.js",
-      "homepage": "https://greasyfork.org/scripts/451825",
-      "sites": [
-        "www.reddit.com"
-      ],
-      "category": "reddit",
-      "licence": "MIT",
-      "needs_gm": "none",
-      "connect": [],
-      "requires": []
-    },
-    {
       "id": "gh-adguard-disable-amp",
       "name": "Disable AMP",
-      "description": "Opens AMP and Yandex Turbo pages as their original non-AMP versions.",
+      "description": "Opens AMP and Yandex Turbo pages as their original non-AMP versions and cleans Google/Google News result links.",
       "install_url": "https://userscripts.adtidy.org/release/disable-amp/1.0/disable-amp.user.js",
       "homepage": "https://github.com/AdguardTeam/DisableAMP",
       "sites": [
@@ -571,9 +556,12 @@
         "*.stackapps.com",
         "*.mathoverflow.net",
         "*.stackexchange.com",
-        "www.google.com",
+        "www.google.*",
+        "google.*",
+        "*.google.*",
         "*.bing.com",
-        "*.yahoo.com"
+        "*.yahoo.com",
+        "*.yahoo.*"
       ],
       "category": "stackexchange",
       "licence": "MIT",
@@ -610,36 +598,6 @@
       ]
     },
     {
-      "id": "gh-sox",
-      "name": "Stack Overflow Extras (SOX)",
-      "description": "Adds optional, individually toggled features to Stack Overflow and Stack Exchange sites.",
-      "install_url": "https://raw.githubusercontent.com/soscripted/sox/master/sox.user.js",
-      "homepage": "https://github.com/soscripted/sox",
-      "sites": [
-        "*.stackoverflow.com",
-        "*.stackexchange.com",
-        "*.superuser.com",
-        "*.serverfault.com",
-        "*.askubuntu.com",
-        "*.stackapps.com",
-        "*.mathoverflow.net"
-      ],
-      "category": "stackexchange",
-      "licence": "MIT",
-      "needs_gm": "basic",
-      "connect": [],
-      "requires": [
-        "https://code.jquery.com/jquery-3.3.1.min.js",
-        "https://code.jquery.com/ui/1.12.1/jquery-ui.min.js",
-        "https://api.stackexchange.com/js/2.0/all.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.5.3/jquery.timeago.min.js",
-        "https://cdn.jsdelivr.net/gh/soscripted/sox@dev/sox.common.js",
-        "https://cdn.jsdelivr.net/gh/soscripted/sox@dev/sox.github.js",
-        "https://cdn.jsdelivr.net/gh/soscripted/sox@dev/sox.dialog.js",
-        "https://cdn.jsdelivr.net/gh/soscripted/sox@dev/sox.features.js"
-      ]
-    },
-    {
       "id": "gh-fznhq-so-dark",
       "name": "Dark Theme Stackoverflow",
       "description": "Applies the Stack Overflow dark theme without being logged in.",
@@ -660,21 +618,6 @@
       "description": "Enables Wikipedia's built-in dark mode for the Vector and Minerva skins.",
       "install_url": "https://update.greasyfork.org/scripts/554008/Wikipedia%20Dark%20Theme%20Automatic.user.js",
       "homepage": "https://greasyfork.org/scripts/554008",
-      "sites": [
-        "*.wikipedia.org"
-      ],
-      "category": "wikipedia",
-      "licence": "MIT",
-      "needs_gm": "none",
-      "connect": [],
-      "requires": []
-    },
-    {
-      "id": "gf-540095",
-      "name": "Darkenator: Wikipedia Dark Mode",
-      "description": "Adds a dark mode toggle button to Wikipedia pages.",
-      "install_url": "https://update.greasyfork.org/scripts/540095/Darkenator%3A%20Wikipedia%20Dark%20Mode.user.js",
-      "homepage": "https://greasyfork.org/scripts/540095",
       "sites": [
         "*.wikipedia.org"
       ],
@@ -722,66 +665,6 @@
       "category": "media",
       "licence": "MIT",
       "needs_gm": "none",
-      "connect": [],
-      "requires": []
-    },
-    {
-      "id": "gf-440872",
-      "name": "Ultimate Autoplay Blocker",
-      "description": "Stops HTML5 media from autoplaying by removing the autoplay attribute and watching page changes.",
-      "install_url": "https://update.greasyfork.org/scripts/440872/Ultimate%20Autoplay%20Blocker.user.js",
-      "homepage": "https://greasyfork.org/scripts/440872",
-      "sites": [
-        "*"
-      ],
-      "category": "media",
-      "licence": null,
-      "needs_gm": "none",
-      "connect": [],
-      "requires": []
-    },
-    {
-      "id": "gf-540240",
-      "name": "Disable Video Autoplay",
-      "description": "Prevents videos from autoplaying and adds a play button overlay.",
-      "install_url": "https://update.greasyfork.org/scripts/540240/Disable%20Video%20Autoplay.user.js",
-      "homepage": "https://greasyfork.org/scripts/540240",
-      "sites": [
-        "*"
-      ],
-      "category": "media",
-      "licence": null,
-      "needs_gm": "none",
-      "connect": [],
-      "requires": []
-    },
-    {
-      "id": "gf-397256",
-      "name": "Universal Dark Theme Maker",
-      "description": "Applies a simple dark theme to any website, configurable per site.",
-      "install_url": "https://update.greasyfork.org/scripts/397256/Universal%20Dark%20Theme%20Maker.user.js",
-      "homepage": "https://greasyfork.org/scripts/397256",
-      "sites": [
-        "*"
-      ],
-      "category": "dark-mode",
-      "licence": null,
-      "needs_gm": "basic",
-      "connect": [],
-      "requires": []
-    },
-    {
-      "id": "gf-559748",
-      "name": "Universal Dark Mode",
-      "description": "Applies a dark colour scheme to sites that do not offer one.",
-      "install_url": "https://update.greasyfork.org/scripts/559748/Universal%20Dark%20Mode.user.js",
-      "homepage": "https://greasyfork.org/scripts/559748",
-      "sites": [
-        "*"
-      ],
-      "category": "dark-mode",
-      "licence": "MIT",
-      "needs_gm": "basic",
       "connect": [],
       "requires": []
     }
