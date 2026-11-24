@@ -7,7 +7,8 @@ FORMATS = {"abp", "ubo", "adguard", "hosts", "domains", "ips"}
 FILTER_CATEGORIES = {"ads", "privacy", "annoyances", "social", "malware", "phishing", "unbreak",
                      "ads+tracking", "ads+malware", "ads+tracking+malware"}
 SCRIPT_CATEGORIES = {"ads", "shortlinks", "link-cleaning", "google-ai-overview", "youtube", "social",
-                     "github", "cookie-banners"}
+                     "github", "cookie-banners", "reddit", "wikipedia", "stackexchange", "media", "dark-mode",
+                     "amp"}
 GM = {"none", "basic", "xhr"}
 ID = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 STALE_DAYS = 730

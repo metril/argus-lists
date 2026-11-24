@@ -68,6 +68,13 @@ def test_script_errors(mut, frag):
     assert any(frag in m for m in catalog.check_doc(doc(e), "userscripts"))
 
 
+@pytest.mark.parametrize("cat", ["reddit", "wikipedia", "stackexchange", "media", "dark-mode", "amp"])
+def test_script_new_categories_allowed(cat):
+    e = copy.deepcopy(SCRIPT)
+    e["category"] = cat
+    assert catalog.check_doc(doc(e), "userscripts") == []
+
+
 def test_duplicate_ids_and_bad_schema():
     assert any("duplicate" in m for m in catalog.check_doc(doc(FILTER, FILTER), "filters"))
     assert catalog.check_doc({"schema": 2, "entries": []}, "filters")
