@@ -252,29 +252,6 @@
       "requires": []
     },
     {
-      "id": "gf-453320",
-      "name": "Simple Sponsor Skipper",
-      "description": "Skips sponsored segments in YouTube videos using the SponsorBlock database.",
-      "install_url": "https://update.greasyfork.org/scripts/453320/Simple%20Sponsor%20Skipper.user.js",
-      "homepage": "https://greasyfork.org/scripts/453320",
-      "sites": [
-        "*.youtube.com",
-        "youtu.be",
-        "odysee.com",
-        "yewtu.be"
-      ],
-      "category": "youtube",
-      "licence": "AGPL-3.0-or-later",
-      "needs_gm": "xhr",
-      "connect": [
-        "sponsor.ajay.app",
-        "*"
-      ],
-      "requires": [
-        "https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"
-      ]
-    },
-    {
       "id": "gf-560869",
       "name": "SponsorBlock Lite",
       "description": "Lightweight SponsorBlock client that skips sponsor segments on YouTube and Bilibili.",
