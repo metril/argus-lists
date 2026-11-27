@@ -404,6 +404,17 @@
       "licence": "CC0-1.0",
       "homepage": "https://github.com/metril/argus-lists",
       "profile": "strict"
+    },
+    {
+      "id": "argus-base",
+      "name": "Argus Base",
+      "description": "Ad and tracker hosts the uBlock Origin and AdGuard defaults miss; low breakage. Offered once and enabled by default.",
+      "url": "https://raw.githubusercontent.com/metril/argus-lists/main/filters/argus-base.txt",
+      "format": "abp",
+      "category": "ads+tracking",
+      "licence": "CC0-1.0",
+      "homepage": "https://github.com/metril/argus-lists",
+      "profile": "default"
     }
   ]
 }

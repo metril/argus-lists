@@ -43,6 +43,7 @@ def test_valid_docs():
     (lambda e: e.update(homepage="ftp://x"), "homepage"),
     (lambda e: e.update(trusted="yes"), "trusted"),
     (lambda e: e.update(profile="loose"), "profile"),
+    (lambda e: e.update(profile=1), "profile"),
     (lambda e: e.update(url="https://raw.githubusercontent.com/metril/argus-lists/main/filters/none.txt"), "does not exist"),
 ])
 def test_filter_errors(mut, frag):
@@ -231,3 +232,20 @@ def test_argus_extra_is_opt_in_strict_and_well_formed():
     rules = [l for l in lines if l and not l.startswith(("!", "["))]
     assert len(rules) == len(set(rules)) and all(l.startswith("||") for l in rules)
     assert all(l.islower() for l in rules)
+
+
+@pytest.mark.parametrize("profile", ["default", "strict"])
+def test_profile_values_accepted(profile):
+    e = dict(copy.deepcopy(FILTER), profile=profile)
+    assert not any("profile" in m for m in catalog.check_doc(doc(e), "filters"))
+
+
+def test_argus_base_is_default_and_well_formed():
+    e = next(x for x in catalog.load()[0]["filters"]["entries"] if x["id"] == "argus-base")
+    assert e["profile"] == "default" and not e.get("trusted") and e["format"] == "abp"
+    lines = (ROOT / "filters" / "argus-base.txt").read_text().splitlines()
+    assert lines[0] == "[Adblock Plus 2.0]"
+    assert any(l.startswith("! Title: Argus Base") for l in lines)
+    assert any(l.startswith("! Expires:") for l in lines)
+    rules = [l for l in lines if l and not l.startswith(("!", "["))]
+    assert rules == ["||ads.tritondigital.com^", "||admob.googleapis.com^", "||snap.licdn.com^", "||px.ads.linkedin.com^"]

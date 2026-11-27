@@ -1,0 +1,11 @@
+[Adblock Plus 2.0]
+! Title: Argus Base
+! Description: Ad/tracker hosts the uBO and AdGuard defaults miss; low breakage.
+! Homepage: https://github.com/metril/argus-lists
+! Licence: CC0-1.0
+! Expires: 1 day
+!
+||ads.tritondigital.com^
+||admob.googleapis.com^
+||snap.licdn.com^
+||px.ads.linkedin.com^
