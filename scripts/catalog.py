@@ -64,10 +64,11 @@ def check_doc(doc, kind):
             _str(e, "licence_note", errs, where, optional=True)
             if "noncommercial" in e and not isinstance(e["noncommercial"], bool):
                 errs.append(f"{where}: noncommercial must be a boolean")
-            if "trusted" in e and not isinstance(e["trusted"], bool):
-                errs.append(f"{where}: trusted must be a boolean")
-            if e.get("profile", "strict") not in ("default", "strict"):
-                errs.append(f"{where}: profile must be 'default' or 'strict' when present")
+            for k in ("default_enabled", "trusted"):
+                if not isinstance(e.get(k), bool):
+                    errs.append(f"{where}: {k} is required and must be a boolean")
+            if "profile" in e:
+                errs.append(f"{where}: profile is no longer supported (remove it)")
             m = OWN_URL.match(e.get("url") or "")
             if m and not (ROOT / m.group(1)).is_file():
                 errs.append(f"{where}: {m.group(1)} does not exist in this repository")

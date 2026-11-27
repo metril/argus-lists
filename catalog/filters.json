@@ -10,7 +10,9 @@
       "format": "abp",
       "category": "ads",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
-      "homepage": "https://easylist.to/"
+      "homepage": "https://easylist.to/",
+      "default_enabled": true,
+      "trusted": false
     },
     {
       "id": "easyprivacy",
@@ -20,7 +22,9 @@
       "format": "abp",
       "category": "privacy",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
-      "homepage": "https://easylist.to/"
+      "homepage": "https://easylist.to/",
+      "default_enabled": true,
+      "trusted": false
     },
     {
       "id": "ublock-filters",
@@ -31,7 +35,8 @@
       "category": "ads",
       "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": true
     },
     {
       "id": "ublock-badware",
@@ -42,7 +47,8 @@
       "category": "malware",
       "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": true
     },
     {
       "id": "ublock-privacy",
@@ -53,7 +59,8 @@
       "category": "privacy",
       "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": true
     },
     {
       "id": "ublock-annoyances",
@@ -63,7 +70,9 @@
       "format": "ubo",
       "category": "annoyances",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/uBlockOrigin/uAssets"
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "default_enabled": false,
+      "trusted": true
     },
     {
       "id": "ublock-unbreak",
@@ -74,7 +83,8 @@
       "category": "unbreak",
       "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": true
     },
     {
       "id": "ublock-quick-fixes",
@@ -85,7 +95,8 @@
       "category": "ads",
       "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": true
     },
     {
       "id": "ublock-resource-abuse",
@@ -96,7 +107,8 @@
       "category": "malware",
       "licence": "GPL-3.0-only",
       "homepage": "https://github.com/uBlockOrigin/uAssets",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": false
     },
     {
       "id": "adguard-base",
@@ -107,7 +119,8 @@
       "category": "ads",
       "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
-      "trusted": true
+      "trusted": true,
+      "default_enabled": true
     },
     {
       "id": "adguard-tracking",
@@ -117,7 +130,9 @@
       "format": "ubo",
       "category": "privacy",
       "licence": "GPL-3.0-only",
-      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "default_enabled": true,
+      "trusted": false
     },
     {
       "id": "adguard-annoyances",
@@ -127,7 +142,9 @@
       "format": "ubo",
       "category": "annoyances",
       "licence": "GPL-3.0-only",
-      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "adguard-social",
@@ -137,7 +154,9 @@
       "format": "ubo",
       "category": "social",
       "licence": "GPL-3.0-only",
-      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "adguard-mobile",
@@ -147,7 +166,9 @@
       "format": "ubo",
       "category": "ads",
       "licence": "GPL-3.0-only",
-      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "default_enabled": true,
+      "trusted": false
     },
     {
       "id": "adguard-url-tracking",
@@ -157,7 +178,9 @@
       "format": "ubo",
       "category": "privacy",
       "licence": "GPL-3.0-only",
-      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "default_enabled": true,
+      "trusted": false
     },
     {
       "id": "fanboy-annoyance",
@@ -167,7 +190,21 @@
       "format": "abp",
       "category": "annoyances",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
-      "homepage": "https://easylist.to/"
+      "homepage": "https://easylist.to/",
+      "default_enabled": false,
+      "trusted": false
+    },
+    {
+      "id": "easylist-cookie",
+      "name": "EasyList Cookie List",
+      "description": "Hides cookie-consent banners and notices (Fanboy's Cookiemonster list).",
+      "url": "https://secure.fanboy.co.nz/fanboy-cookiemonster.txt",
+      "format": "abp",
+      "category": "annoyances",
+      "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
+      "homepage": "https://easylist.to/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "fanboy-social",
@@ -177,7 +214,9 @@
       "format": "abp",
       "category": "social",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
-      "homepage": "https://easylist.to/"
+      "homepage": "https://easylist.to/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "peter-lowe-abp",
@@ -189,7 +228,9 @@
       "licence": "LicenseRef-personal-use-only",
       "homepage": "https://pgl.yoyo.org/adservers/",
       "licence_note": "free for personal use",
-      "noncommercial": true
+      "noncommercial": true,
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "easylist-germany",
@@ -200,7 +241,9 @@
       "category": "ads",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
       "homepage": "https://easylist.to/",
-      "region": "de"
+      "region": "de",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "easylist-italy",
@@ -211,7 +254,9 @@
       "category": "ads",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
       "homepage": "https://easylist.to/",
-      "region": "it"
+      "region": "it",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "easylist-dutch",
@@ -222,7 +267,9 @@
       "category": "ads",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
       "homepage": "https://easylist.to/",
-      "region": "nl"
+      "region": "nl",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "liste-fr",
@@ -233,7 +280,9 @@
       "category": "ads",
       "licence": "GPL-3.0-only",
       "homepage": "https://forums.lanik.us/viewforum.php?f=91",
-      "region": "fr"
+      "region": "fr",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "abpindo",
@@ -244,7 +293,9 @@
       "category": "ads",
       "licence": "CC-BY-SA-4.0",
       "homepage": "https://github.com/ABPindo/indonesianadblockrules",
-      "region": "id"
+      "region": "id",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "ruadlist",
@@ -255,7 +306,9 @@
       "category": "ads",
       "licence": "CC-BY-SA-3.0",
       "homepage": "https://forums.lanik.us/viewforum.php?f=102",
-      "region": "ru"
+      "region": "ru",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "easylist-china",
@@ -266,7 +319,9 @@
       "category": "ads",
       "licence": "GPL-3.0-or-later OR CC-BY-SA-3.0",
       "homepage": "https://easylist.to/",
-      "region": "zh"
+      "region": "zh",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "adguard-japanese",
@@ -277,7 +332,9 @@
       "category": "ads",
       "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
-      "region": "ja"
+      "region": "ja",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "stevenblack-unified",
@@ -287,7 +344,9 @@
       "format": "hosts",
       "category": "ads+malware",
       "licence": "MIT",
-      "homepage": "https://github.com/StevenBlack/hosts"
+      "homepage": "https://github.com/StevenBlack/hosts",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "adaway",
@@ -297,7 +356,9 @@
       "format": "hosts",
       "category": "ads",
       "licence": "CC-BY-3.0",
-      "homepage": "https://adaway.org/"
+      "homepage": "https://adaway.org/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "peter-lowe",
@@ -309,7 +370,22 @@
       "licence": "LicenseRef-personal-use-only",
       "homepage": "https://pgl.yoyo.org/adservers/",
       "licence_note": "free for personal use",
-      "noncommercial": true
+      "noncommercial": true,
+      "default_enabled": true,
+      "trusted": false
+    },
+    {
+      "id": "developerdan-ads",
+      "name": "Developer Dan's Ads and Tracking Extended",
+      "description": "Hosts list of ad, tracking and telemetry servers.",
+      "url": "https://www.github.developerdan.com/hosts/lists/ads-and-tracking-extended.txt",
+      "format": "hosts",
+      "category": "ads+tracking",
+      "licence": "CC-BY-NC-SA-4.0",
+      "homepage": "https://github.com/lightswitch05/hosts",
+      "noncommercial": true,
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "blocklistproject-ads",
@@ -319,7 +395,9 @@
       "format": "hosts",
       "category": "ads",
       "licence": "Unlicense",
-      "homepage": "https://github.com/blocklistproject/Lists"
+      "homepage": "https://github.com/blocklistproject/Lists",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "hagezi-light-domains",
@@ -329,7 +407,9 @@
       "format": "domains",
       "category": "ads+tracking",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/hagezi/dns-blocklists"
+      "homepage": "https://github.com/hagezi/dns-blocklists",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "hagezi-pro-domains",
@@ -339,7 +419,9 @@
       "format": "domains",
       "category": "ads+tracking+malware",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/hagezi/dns-blocklists"
+      "homepage": "https://github.com/hagezi/dns-blocklists",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "hagezi-tif-domains",
@@ -349,7 +431,9 @@
       "format": "domains",
       "category": "malware",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/hagezi/dns-blocklists"
+      "homepage": "https://github.com/hagezi/dns-blocklists",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "oisd-small",
@@ -359,7 +443,9 @@
       "format": "domains",
       "category": "ads+tracking+malware",
       "licence": "GPL-3.0-only",
-      "homepage": "https://oisd.nl/"
+      "homepage": "https://oisd.nl/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "phishing-army",
@@ -370,7 +456,9 @@
       "category": "phishing",
       "licence": "CC-BY-NC-4.0",
       "homepage": "https://phishing.army/",
-      "noncommercial": true
+      "noncommercial": true,
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "spamhaus-drop",
@@ -382,7 +470,9 @@
       "licence": "LicenseRef-non-commercial",
       "homepage": "https://www.spamhaus.org/drop/",
       "licence_note": "free for non-commercial use",
-      "noncommercial": true
+      "noncommercial": true,
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "feodo-ips",
@@ -392,7 +482,9 @@
       "format": "ips",
       "category": "malware",
       "licence": "CC0-1.0",
-      "homepage": "https://feodotracker.abuse.ch/blocklist/"
+      "homepage": "https://feodotracker.abuse.ch/blocklist/",
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "argus-extra",
@@ -403,7 +495,8 @@
       "category": "ads+tracking",
       "licence": "CC0-1.0",
       "homepage": "https://github.com/metril/argus-lists",
-      "profile": "strict"
+      "default_enabled": false,
+      "trusted": false
     },
     {
       "id": "argus-base",
@@ -414,7 +507,8 @@
       "category": "ads+tracking",
       "licence": "CC0-1.0",
       "homepage": "https://github.com/metril/argus-lists",
-      "profile": "default"
+      "default_enabled": true,
+      "trusted": false
     }
   ]
 }

@@ -8,7 +8,8 @@ import catalog  # noqa: E402
 
 NOW = dt.datetime(2026, 11, 23, tzinfo=dt.timezone.utc)
 FILTER = dict(id="easylist", name="EasyList", description="d", url="https://example.com/a.txt", format="abp",
-              category="ads", licence="GPL-3.0", homepage="https://example.com/")
+              category="ads", licence="GPL-3.0", homepage="https://example.com/",
+              default_enabled=False, trusted=False)
 SCRIPT = dict(id="gf-1", name="S", description="d", install_url="https://update.greasyfork.org/scripts/1/s.user.js",
               homepage="https://greasyfork.org/scripts/1", sites=["*"], category="ads", licence=None,
               needs_gm="none", connect=[], requires=[])
@@ -42,8 +43,12 @@ def test_valid_docs():
     (lambda e: e.pop("name"), "name"),
     (lambda e: e.update(homepage="ftp://x"), "homepage"),
     (lambda e: e.update(trusted="yes"), "trusted"),
-    (lambda e: e.update(profile="loose"), "profile"),
-    (lambda e: e.update(profile=1), "profile"),
+    (lambda e: e.update(profile="strict"), "profile"),
+    (lambda e: e.update(profile="default"), "profile"),
+    (lambda e: e.pop("trusted"), "trusted"),
+    (lambda e: e.pop("default_enabled"), "default_enabled"),
+    (lambda e: e.update(default_enabled="yes"), "default_enabled"),
+    (lambda e: e.update(default_enabled=1), "default_enabled"),
     (lambda e: e.update(url="https://raw.githubusercontent.com/metril/argus-lists/main/filters/none.txt"), "does not exist"),
 ])
 def test_filter_errors(mut, frag):
@@ -225,7 +230,7 @@ def test_github_date_fallback():
 
 def test_argus_extra_is_opt_in_strict_and_well_formed():
     e = next(x for x in catalog.load()[0]["filters"]["entries"] if x["id"] == "argus-extra")
-    assert e["profile"] == "strict" and not e.get("trusted") and e["format"] == "abp"
+    assert "profile" not in e and not e["default_enabled"] and not e["trusted"] and e["format"] == "abp"
     lines = (ROOT / "filters" / "argus-extra.txt").read_text().splitlines()
     assert lines[0] == "[Adblock Plus 2.0]"
     assert any(l.startswith("! Expires:") for l in lines) and any("opt-in" in l.lower() for l in lines)
@@ -234,18 +239,43 @@ def test_argus_extra_is_opt_in_strict_and_well_formed():
     assert all(l.islower() for l in rules)
 
 
-@pytest.mark.parametrize("profile", ["default", "strict"])
-def test_profile_values_accepted(profile):
-    e = dict(copy.deepcopy(FILTER), profile=profile)
-    assert not any("profile" in m for m in catalog.check_doc(doc(e), "filters"))
-
-
 def test_argus_base_is_default_and_well_formed():
     e = next(x for x in catalog.load()[0]["filters"]["entries"] if x["id"] == "argus-base")
-    assert e["profile"] == "default" and not e.get("trusted") and e["format"] == "abp"
+    assert "profile" not in e and e["default_enabled"] and not e["trusted"] and e["format"] == "abp"
     lines = (ROOT / "filters" / "argus-base.txt").read_text().splitlines()
     assert lines[0] == "[Adblock Plus 2.0]"
     assert any(l.startswith("! Title: Argus Base") for l in lines)
     assert any(l.startswith("! Expires:") for l in lines)
     rules = [l for l in lines if l and not l.startswith(("!", "["))]
     assert rules == ["||ads.tritondigital.com^", "||admob.googleapis.com^", "||snap.licdn.com^", "||px.ads.linkedin.com^"]
+
+
+ARGUS_IDS = {
+    "ublock-filters", "ublock-privacy", "ublock-badware", "ublock-quick-fixes", "ublock-unbreak",
+    "ublock-annoyances", "easylist", "easyprivacy", "easylist-cookie", "fanboy-social", "peter-lowe",
+    "adguard-base", "adguard-tracking", "adguard-url-tracking", "adguard-mobile", "adguard-annoyances",
+    "adguard-social", "stevenblack-unified", "adaway", "blocklistproject-ads", "developerdan-ads",
+    "hagezi-light-domains", "hagezi-pro-domains", "hagezi-tif-domains", "oisd-small", "phishing-army",
+    "spamhaus-drop", "feodo-ips", "argus-base", "argus-extra",
+}
+DEFAULT_ENABLED = {
+    "ublock-filters", "ublock-badware", "ublock-privacy", "ublock-quick-fixes", "ublock-unbreak",
+    "easylist", "easyprivacy", "peter-lowe", "adguard-base", "adguard-tracking", "adguard-url-tracking",
+    "adguard-mobile", "argus-base",
+}
+
+
+def _entries():
+    return {x["id"]: x for x in catalog.load()[0]["filters"]["entries"]}
+
+
+def test_required_argus_ids_present():
+    assert ARGUS_IDS <= set(_entries())
+
+
+def test_default_enabled_set_is_pinned():
+    assert {i for i, e in _entries().items() if e["default_enabled"]} == DEFAULT_ENABLED
+
+
+def test_trusted_only_ubo_and_adguard_base():
+    assert {i for i, e in _entries().items() if e["trusted"]} == {i for i in _entries() if i.startswith("ublock-")} | {"adguard-base"}
