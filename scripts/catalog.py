@@ -9,6 +9,7 @@ FILTER_CATEGORIES = {"ads", "privacy", "annoyances", "social", "malware", "phish
 SCRIPT_CATEGORIES = {"ads", "shortlinks", "link-cleaning", "google-ai-overview", "youtube", "social",
                      "github", "cookie-banners", "reddit", "wikipedia", "stackexchange", "media",
                      "amp"}
+OWN_URL = re.compile(r"^https://raw\.githubusercontent\.com/metril/argus-lists/main/(filters/[^?#]+)$")
 GM = {"none", "basic", "xhr"}
 ID = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 STALE_DAYS = 730
@@ -65,6 +66,11 @@ def check_doc(doc, kind):
                 errs.append(f"{where}: noncommercial must be a boolean")
             if "trusted" in e and not isinstance(e["trusted"], bool):
                 errs.append(f"{where}: trusted must be a boolean")
+            if e.get("profile", "strict") != "strict":
+                errs.append(f"{where}: profile must be 'strict' when present")
+            m = OWN_URL.match(e.get("url") or "")
+            if m and not (ROOT / m.group(1)).is_file():
+                errs.append(f"{where}: {m.group(1)} does not exist in this repository")
             if isinstance(e.get("licence"), str) and not SPDX.match(e["licence"]):
                 errs.append(f"{where}: licence must be an SPDX id or expression (use licence_note for free text)")
             if e.get("format") not in FORMATS:

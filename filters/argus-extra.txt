@@ -1,0 +1,23 @@
+[Adblock Plus 2.0]
+! Title: Argus Extra Trackers
+! Description: Tracker and ad hosts the uBlock Origin and AdGuard default lists do not cover.
+! NOTE: Opt-in strict list, off by default. It may break some sites (for example Facebook login and embeds).
+! Homepage: https://github.com/metril/argus-lists
+! Licence: CC0-1.0
+! Expires: 1 day
+!
+! TikTok
+||ads-api.tiktok.com^
+||ads-sg.tiktok.com^
+||business-api.tiktok.com^
+||log.byteoversea.com^
+! Quora
+||pixel.quora.com^
+||qevents.quora.com^
+! VK, X / Twitter, Facebook
+||ads.vk.com^
+||ads.x.com^
+||ads-api.twitter.com^
+||an.facebook.com^
+! Facebook SDK: breaks Facebook login and embeds
+||connect.facebook.net^$script,third-party

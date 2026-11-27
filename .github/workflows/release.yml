@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches: [main]
-    paths: ["lists/**", "roots/**", "catalog/**", "meta.json", "scripts/**", ".github/workflows/release.yml"]
+    paths: ["lists/**", "roots/**", "catalog/**", "filters/**", "meta.json", "scripts/**", ".github/workflows/release.yml"]
   workflow_dispatch:
 
 permissions:
