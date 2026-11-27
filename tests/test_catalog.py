@@ -42,6 +42,8 @@ def test_valid_docs():
     (lambda e: e.pop("name"), "name"),
     (lambda e: e.update(homepage="ftp://x"), "homepage"),
     (lambda e: e.update(trusted="yes"), "trusted"),
+    (lambda e: e.update(profile="loose"), "profile"),
+    (lambda e: e.update(url="https://raw.githubusercontent.com/metril/argus-lists/main/filters/none.txt"), "does not exist"),
 ])
 def test_filter_errors(mut, frag):
     e = copy.deepcopy(FILTER)
@@ -218,3 +220,14 @@ def test_github_date_fallback():
     e = dict(SCRIPT, install_url=url)
     errs = catalog.check_entry_net("userscripts", e, lambda u: (200, {}, HEADER), NOW, [], lambda u: old)
     assert any("stale" in m for m in errs)
+
+
+def test_argus_extra_is_opt_in_strict_and_well_formed():
+    e = next(x for x in catalog.load()[0]["filters"]["entries"] if x["id"] == "argus-extra")
+    assert e["profile"] == "strict" and not e.get("trusted") and e["format"] == "abp"
+    lines = (ROOT / "filters" / "argus-extra.txt").read_text().splitlines()
+    assert lines[0] == "[Adblock Plus 2.0]"
+    assert any(l.startswith("! Expires:") for l in lines) and any("opt-in" in l.lower() for l in lines)
+    rules = [l for l in lines if l and not l.startswith(("!", "["))]
+    assert len(rules) == len(set(rules)) and all(l.startswith("||") for l in rules)
+    assert all(l.islower() for l in rules)

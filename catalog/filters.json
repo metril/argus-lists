@@ -393,6 +393,17 @@
       "category": "malware",
       "licence": "CC0-1.0",
       "homepage": "https://feodotracker.abuse.ch/blocklist/"
+    },
+    {
+      "id": "argus-extra",
+      "name": "Argus Extra Trackers",
+      "description": "Strict opt-in list of tracker and ad hosts the default lists miss (TikTok, Quora, VK, X, Facebook). May break some sites, e.g. Facebook login and embeds.",
+      "url": "https://raw.githubusercontent.com/metril/argus-lists/main/filters/argus-extra.txt",
+      "format": "abp",
+      "category": "ads+tracking",
+      "licence": "CC0-1.0",
+      "homepage": "https://github.com/metril/argus-lists",
+      "profile": "strict"
     }
   ]
 }
