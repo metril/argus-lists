@@ -66,8 +66,8 @@ def check_doc(doc, kind):
                 errs.append(f"{where}: noncommercial must be a boolean")
             if "trusted" in e and not isinstance(e["trusted"], bool):
                 errs.append(f"{where}: trusted must be a boolean")
-            if e.get("profile", "strict") != "strict":
-                errs.append(f"{where}: profile must be 'strict' when present")
+            if e.get("profile", "strict") not in ("default", "strict"):
+                errs.append(f"{where}: profile must be 'default' or 'strict' when present")
             m = OWN_URL.match(e.get("url") or "")
             if m and not (ROOT / m.group(1)).is_file():
                 errs.append(f"{where}: {m.group(1)} does not exist in this repository")
