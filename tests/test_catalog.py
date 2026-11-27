@@ -41,6 +41,7 @@ def test_valid_docs():
     (lambda e: e.update(id="Bad Id"), "id must"),
     (lambda e: e.pop("name"), "name"),
     (lambda e: e.update(homepage="ftp://x"), "homepage"),
+    (lambda e: e.update(trusted="yes"), "trusted"),
 ])
 def test_filter_errors(mut, frag):
     e = copy.deepcopy(FILTER)
