@@ -29,7 +29,7 @@ publishes `<id>.txt`, `<id>.txt.minisig`, `meta.json` and `meta.json.minisig` as
 
 ## Catalogues
 
-`catalog/filters.json` (`{"schema":1,"entries":[{id,name,description,url,format,category,licence,homepage,region?}]}`,
+`catalog/filters.json` (`{"schema":1,"entries":[{id,name,description,url,format,category,licence,homepage,region?,trusted?}]}`,
 `format` is `abp|ubo|adguard|hosts|domains|ips`) and `catalog/userscripts.json` (`{"schema":1,"entries":[{id,name,
 description,install_url,homepage,sites,category,licence,needs_gm,connect}]}`, `needs_gm` is `none|basic|xhr`,
 `licence` may be null) are copied into the release and signed like the lists (`filters.json`, `userscripts.json`
@@ -40,7 +40,7 @@ userscript headers (`@name`, `@updateURL`/`@downloadURL`) and flags entries not 
 Each catalogue carries a top-level `kind` that must match its filename, and `meta.json` (signed) lists both with their
 `sha256` and entry count under `catalogues`, so a catalogue cannot be swapped for another or rolled back unnoticed.
 `licence` is an SPDX id or expression (free text goes in `licence_note`); `noncommercial: true` marks lists whose terms
-restrict commercial use. Userscript entries carry `requires` (the `@require` URLs).
+restrict commercial use; `trusted: true` (uBlock Origin lists, AdGuard Base) lets Argus run the list's extended rules (scriptlets, `$replace`) once added. Userscript entries carry `requires` (the `@require` URLs).
 
 The signed userscript catalogue attests to curation and the install URL, not to the code: authors can change a script
 at any time. Argus shows each script's grants, `connect` hosts and `require` URLs in the install plan and holds

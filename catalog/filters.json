@@ -30,7 +30,8 @@
       "format": "ubo",
       "category": "ads",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/uBlockOrigin/uAssets"
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "trusted": true
     },
     {
       "id": "ublock-badware",
@@ -40,7 +41,8 @@
       "format": "ubo",
       "category": "malware",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/uBlockOrigin/uAssets"
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "trusted": true
     },
     {
       "id": "ublock-privacy",
@@ -50,7 +52,8 @@
       "format": "ubo",
       "category": "privacy",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/uBlockOrigin/uAssets"
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "trusted": true
     },
     {
       "id": "ublock-annoyances",
@@ -70,7 +73,8 @@
       "format": "ubo",
       "category": "unbreak",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/uBlockOrigin/uAssets"
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "trusted": true
     },
     {
       "id": "ublock-quick-fixes",
@@ -80,7 +84,19 @@
       "format": "ubo",
       "category": "ads",
       "licence": "GPL-3.0-only",
-      "homepage": "https://github.com/uBlockOrigin/uAssets"
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "trusted": true
+    },
+    {
+      "id": "ublock-resource-abuse",
+      "name": "uBlock filters - Resource abuse",
+      "description": "Blocks cryptominers and other resource-abusing scripts.",
+      "url": "https://ublockorigin.github.io/uAssets/filters/resource-abuse.min.txt",
+      "format": "ubo",
+      "category": "malware",
+      "licence": "GPL-3.0-only",
+      "homepage": "https://github.com/uBlockOrigin/uAssets",
+      "trusted": true
     },
     {
       "id": "adguard-base",
@@ -90,7 +106,8 @@
       "format": "ubo",
       "category": "ads",
       "licence": "GPL-3.0-only",
-      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/"
+      "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
+      "trusted": true
     },
     {
       "id": "adguard-tracking",

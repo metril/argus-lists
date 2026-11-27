@@ -63,6 +63,8 @@ def check_doc(doc, kind):
             _str(e, "licence_note", errs, where, optional=True)
             if "noncommercial" in e and not isinstance(e["noncommercial"], bool):
                 errs.append(f"{where}: noncommercial must be a boolean")
+            if "trusted" in e and not isinstance(e["trusted"], bool):
+                errs.append(f"{where}: trusted must be a boolean")
             if isinstance(e.get("licence"), str) and not SPDX.match(e["licence"]):
                 errs.append(f"{where}: licence must be an SPDX id or expression (use licence_note for free text)")
             if e.get("format") not in FORMATS:
