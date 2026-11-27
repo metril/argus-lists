@@ -20,4 +20,9 @@
 ||ads-api.twitter.com^
 ||an.facebook.com^
 ! Facebook SDK: breaks Facebook login and embeds
-||connect.facebook.net^$script,third-party
+||connect.facebook.net^$script,xmlhttprequest,subdocument,third-party
+! Triton Digital (audio ads), Google AdMob (mobile ads), LinkedIn Insight Tag
+||ads.tritondigital.com^
+||admob.googleapis.com^
+||snap.licdn.com^
+||px.ads.linkedin.com^
