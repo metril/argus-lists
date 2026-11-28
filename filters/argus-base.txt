@@ -9,3 +9,7 @@
 ||admob.googleapis.com^
 ||snap.licdn.com^
 ||px.ads.linkedin.com^
+!
+! Cloudflare challenge and bot-management scripts must load on the site being visited, or its challenge page never completes.
+@@/cdn-cgi/challenge-platform/$1p
+@@/cdn-cgi/bm/cv/$script,1p
