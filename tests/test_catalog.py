@@ -247,7 +247,9 @@ def test_argus_base_is_default_and_well_formed():
     assert any(l.startswith("! Title: Argus Base") for l in lines)
     assert any(l.startswith("! Expires:") for l in lines)
     rules = [l for l in lines if l and not l.startswith(("!", "["))]
-    assert rules == ["||ads.tritondigital.com^", "||admob.googleapis.com^", "||snap.licdn.com^", "||px.ads.linkedin.com^"]
+    assert rules == ["||ads.tritondigital.com^", "||admob.googleapis.com^", "||snap.licdn.com^", "||px.ads.linkedin.com^",
+                     "@@/cdn-cgi/challenge-platform/$1p", "@@/cdn-cgi/bm/cv/$script,1p"]
+    assert not any("/cdn-cgi/rum" in l for l in rules)
 
 
 ARGUS_IDS = {
@@ -277,5 +279,67 @@ def test_default_enabled_set_is_pinned():
     assert {i for i, e in _entries().items() if e["default_enabled"]} == DEFAULT_ENABLED
 
 
-def test_trusted_only_ubo_and_adguard_base():
-    assert {i for i, e in _entries().items() if e["trusted"]} == {i for i in _entries() if i.startswith("ublock-")} | {"adguard-base"}
+def test_trusted_only_ubo_and_adguard_lists():
+    assert {i for i, e in _entries().items() if e["trusted"]} == (
+        {i for i in _entries() if i.startswith("ublock-")} | {"adguard-base", "adguard-annoyances", "adguard-social"})
+
+
+def _cols():
+    return {c["id"]: c for c in catalog.load()[0]["filters"]["collections"]}
+
+
+def test_committed_collections():
+    c = _cols()
+    assert set(c) == {"recommended", "annoyances-social"}
+    assert set(c["recommended"]["lists"]) == DEFAULT_ENABLED and len(c["recommended"]["lists"]) == 13
+    assert set(c["annoyances-social"]["lists"]) == {"adguard-annoyances", "adguard-social", "easylist-cookie",
+                                                    "fanboy-social", "ublock-annoyances", "argus-extra"}
+    assert c["annoyances-social"]["warning"] and c["annoyances-social"]["name"] == "Annoyances & social"
+
+
+def _with_cols(*cols, **entry):
+    d = doc({**FILTER, **entry})
+    d["collections"] = [copy.deepcopy(c) for c in cols]
+    return d
+
+
+COL = dict(id="mine", name="Mine", description="d", lists=["easylist"])
+
+
+def test_collections_valid():
+    assert catalog.check_doc(_with_cols(COL), "filters") == []
+    assert catalog.check_doc(_with_cols({**COL, "warning": "careful"}), "filters") == []
+
+
+@pytest.mark.parametrize("mut,frag", [
+    (lambda c: c.update(id="Bad Id"), "id must"),
+    (lambda c: c.update(lists=["nope"]), "unknown list id"),
+    (lambda c: c.update(lists=[]), "non-empty"),
+    (lambda c: c.pop("lists"), "non-empty"),
+    (lambda c: c.update(lists=["easylist", "easylist"]), "duplicates"),
+    (lambda c: c.pop("name"), "name"),
+    (lambda c: c.update(warning=""), "warning"),
+])
+def test_collection_errors(mut, frag):
+    c = copy.deepcopy(COL)
+    mut(c)
+    assert any(frag in m for m in catalog.check_doc(_with_cols(c), "filters"))
+
+
+def test_collection_duplicate_ids():
+    assert any("duplicate" in m for m in catalog.check_doc(_with_cols(COL, COL), "filters"))
+
+
+def test_collections_must_be_list_and_filters_only():
+    d = doc(FILTER)
+    d["collections"] = {}
+    assert any("must be a list" in m for m in catalog.check_doc(d, "filters"))
+    d = doc(SCRIPT)
+    d["collections"] = [COL]
+    assert any("only valid" in m for m in catalog.check_doc(d, "userscripts"))
+
+
+def test_recommended_must_equal_default_enabled():
+    rec = dict(COL, id="recommended")
+    assert catalog.check_doc(_with_cols(rec, default_enabled=True), "filters") == []
+    assert any("default_enabled" in m for m in catalog.check_doc(_with_cols(rec), "filters"))

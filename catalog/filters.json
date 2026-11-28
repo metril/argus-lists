@@ -1,6 +1,42 @@
 {
   "schema": 1,
   "kind": "filters",
+  "collections": [
+    {
+      "id": "recommended",
+      "name": "Recommended",
+      "description": "The lists Argus enables by default: ads, trackers, malware and breakage fixes.",
+      "lists": [
+        "easylist",
+        "easyprivacy",
+        "ublock-filters",
+        "ublock-badware",
+        "ublock-privacy",
+        "ublock-unbreak",
+        "ublock-quick-fixes",
+        "adguard-base",
+        "adguard-tracking",
+        "adguard-mobile",
+        "adguard-url-tracking",
+        "peter-lowe",
+        "argus-base"
+      ]
+    },
+    {
+      "id": "annoyances-social",
+      "name": "Annoyances & social",
+      "description": "Cookie banners, newsletter pop-ups and social widgets. This is the former Strict set.",
+      "warning": "May break embeds, comment widgets and social logins.",
+      "lists": [
+        "adguard-annoyances",
+        "adguard-social",
+        "easylist-cookie",
+        "fanboy-social",
+        "ublock-annoyances",
+        "argus-extra"
+      ]
+    }
+  ],
   "entries": [
     {
       "id": "easylist",
@@ -144,7 +180,7 @@
       "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
       "default_enabled": false,
-      "trusted": false
+      "trusted": true
     },
     {
       "id": "adguard-social",
@@ -156,7 +192,7 @@
       "licence": "GPL-3.0-only",
       "homepage": "https://adguard.com/kb/general/ad-filtering/adguard-filters/",
       "default_enabled": false,
-      "trusted": false
+      "trusted": true
     },
     {
       "id": "adguard-mobile",

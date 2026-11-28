@@ -34,6 +34,44 @@ def _https(e, k, errs, where):
         errs.append(f"{where}: {k} must be an https:// URL")
 
 
+def check_collections(doc, kind):
+    """Validate the optional top-level collections array of the filters catalogue."""
+    if kind != "filters":
+        return [f"{kind}: collections is only valid in the filters catalogue"]
+    cols = doc["collections"]
+    if not isinstance(cols, list):
+        return ["collections must be a list"]
+    errs, seen = [], set()
+    ids = {e.get("id") for e in doc["entries"] if isinstance(e, dict)}
+    for i, c in enumerate(cols):
+        where = f"collections[{i}]"
+        if not isinstance(c, dict):
+            errs.append(f"{where}: must be an object")
+            continue
+        if not isinstance(c.get("id"), str) or not ID.match(c["id"]):
+            errs.append(f"{where}: id must match {ID.pattern}")
+        elif c["id"] in seen:
+            errs.append(f"{where}: duplicate id {c['id']!r}")
+        else:
+            seen.add(c["id"])
+        where = f"collections:{c.get('id', i)}"
+        for k in ("name", "description"):
+            _str(c, k, errs, where)
+        _str(c, "warning", errs, where, optional=True)
+        lists = c.get("lists")
+        if not isinstance(lists, list) or not lists or not all(isinstance(x, str) for x in lists):
+            errs.append(f"{where}: lists must be a non-empty list of ids")
+            continue
+        if len(set(lists)) != len(lists):
+            errs.append(f"{where}: lists contains duplicates")
+        errs += [f"{where}: unknown list id {x!r}" for x in lists if x not in ids]
+        if c.get("id") == "recommended":
+            want = {e["id"] for e in doc["entries"] if isinstance(e, dict) and e.get("default_enabled") is True}
+            if set(lists) != want:
+                errs.append(f"{where}: lists must equal the default_enabled set")
+    return errs
+
+
 def check_doc(doc, kind):
     """kind: 'filters' or 'userscripts'. Returns a list of error strings."""
     errs = []
@@ -42,6 +80,8 @@ def check_doc(doc, kind):
     if doc.get("kind") != kind:
         return [f"{kind}: top-level kind must be {kind!r} (got {doc.get('kind')!r})"]
     seen = set()
+    if "collections" in doc:
+        errs += check_collections(doc, kind)
     for i, e in enumerate(doc["entries"]):
         where = f"{kind}[{i}]"
         if not isinstance(e, dict):
